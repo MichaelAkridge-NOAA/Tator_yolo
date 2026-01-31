@@ -233,6 +233,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: SAM3 availability guard unchanged after services/prepass_config move
 - Spot‑check: calibration sample/hash/link helpers unchanged after services/calibration_helpers move
 - Spot‑check: calibration image listing unchanged after services/calibration_helpers move
+- Spot‑check: calibration atomic write unchanged after services/calibration_helpers move
 - Spot‑check: readable logging (prepass.readable) unchanged after services/readable move
 
 Stage 2 — Prepass Service Extraction
@@ -270,6 +271,7 @@ Stage 2 — Prepass Service Extraction
    - Moved SAM3 availability guard into services/prepass_config.py.
    - Moved calibration helpers (sample/hash/link) into services/calibration_helpers.py.
    - Moved calibration image listing into services/calibration_helpers.py.
+   - Moved calibration atomic record writer into services/calibration_helpers.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
