@@ -251,6 +251,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: qwen caption helper outputs unchanged after services/qwen move
 - Spot‑check: qwen text helper outputs unchanged after services/qwen move
 - Spot‑check: calibration orchestration unchanged after services/calibration move
+- Spot‑check: detector inference outputs unchanged after services/detectors move
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -312,6 +313,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved Qwen caption helper utilities into services/qwen.py.
    - Moved Qwen text prompt helpers into services/qwen.py.
    - Moved calibration job orchestration into services/calibration.py.
+   - Moved detector inference tool into services/detectors.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
