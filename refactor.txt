@@ -273,6 +273,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: qwen training job log/update unchanged after services/qwen_jobs move
 - Spot‑check: qwen training metric append unchanged after services/qwen_jobs move
 - Spot‑check: qwen metric coercion unchanged after services/qwen_jobs move
+- Spot‑check: qwen metric summary unchanged after services/qwen_jobs move
 - Spot‑check: clip training job serialization unchanged after services/classifier_jobs move
 - Spot‑check: clip training job logging/update unchanged after services/classifier_jobs move
 - Spot‑check: clip training job metric append unchanged after services/classifier_jobs move
@@ -542,6 +543,8 @@ Progress Log
 - Stage 2: moved Qwen training metric append helper into
   services/qwen_jobs.py and converted local wrapper.
 - Stage 2: moved Qwen metric coercion helper into
+  services/qwen_jobs.py and converted local wrapper.
+- Stage 2: moved Qwen metric summary helper into
   services/qwen_jobs.py and converted local wrapper.
 - Stage 2: moved CLIP training job serializer into
   services/classifier_jobs.py and converted local wrapper.
