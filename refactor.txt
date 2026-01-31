@@ -268,6 +268,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: prompt helper job serialization unchanged after services/prompt_helper move
 - Spot‑check: segmentation job serialization unchanged after services/segmentation move
 - Spot‑check: qwen training job serialization unchanged after services/qwen_jobs move
+- Spot‑check: clip training job serialization unchanged after services/classifier_jobs move
 - Spot‑check: dataset artifact purge unchanged after services/datasets move
 - Spot‑check: Qwen label collection unchanged after services/datasets move
 - Spot‑check: YOLO labelmap discovery unchanged after services/datasets move
@@ -518,3 +519,5 @@ Progress Log
   services/segmentation.py and converted local wrapper.
 - Stage 2: moved Qwen training job serializer into
   services/qwen_jobs.py and converted local wrapper.
+- Stage 2: moved CLIP training job serializer into
+  services/classifier_jobs.py and converted local wrapper.
