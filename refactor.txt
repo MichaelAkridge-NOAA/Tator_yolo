@@ -451,3 +451,5 @@ Progress Log
   services/detectors.py and converted local wrappers.
 - Stage 4: moved YOLO/RF‑DETR run listing helpers into services/detectors.py
   and converted local wrappers.
+- Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
+  and converted local wrapper.
