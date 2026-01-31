@@ -265,6 +265,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: prepass recipe export endpoint unchanged after services/prepass_recipes move
 - Spot‑check: prepass recipe CRUD endpoints unchanged after services/prepass_recipes move
 - Spot‑check: prompt helper preset endpoints unchanged after services/prompt_helper_presets move
+- Spot‑check: prompt helper job serialization unchanged after services/prompt_helper move
 - Spot‑check: dataset artifact purge unchanged after services/datasets move
 - Spot‑check: Qwen label collection unchanged after services/datasets move
 - Spot‑check: YOLO labelmap discovery unchanged after services/datasets move
@@ -359,6 +360,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved prepass recipe export helper into services/prepass_recipes.py.
    - Moved prepass recipe CRUD helpers into services/prepass_recipes.py.
    - Moved prompt helper preset helpers into services/prompt_helper_presets.py.
+   - Moved prompt helper job serializer into services/prompt_helper.py.
    - Moved dataset artifact purge helper into services/datasets.py.
    - Moved Qwen label collection helpers into services/datasets.py.
    - Moved YOLO labelmap discovery helper into services/datasets.py.
@@ -502,6 +504,8 @@ Progress Log
   services/prepass_recipes.py and converted local wrappers.
 - Stage 2: moved prompt helper preset helpers into
   services/prompt_helper_presets.py and converted local wrappers.
+- Stage 2: moved prompt helper job serializer into
+  services/prompt_helper.py and converted local wrapper.
 - Stage 2: moved dataset artifact purge helper into
   services/datasets.py and converted local wrapper.
 - Stage 2: moved Qwen label collection helpers into
