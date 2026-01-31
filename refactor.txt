@@ -223,6 +223,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: overlay crop bbox selection unchanged after overlay_tools refactor
 - Spot‑check: classifier batch sizing + proba batching unchanged after classifier_batch refactor
 - Spot‑check: detector NMS merge outputs unchanged after detector_merge refactor
+- Spot‑check: prepass cache meta includes glossary text + hash (new caching safety)
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
