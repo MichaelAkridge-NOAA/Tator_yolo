@@ -218,6 +218,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: detector payload fields (bbox_2d/bbox_yolo) unchanged after coords det_payload refactor
 - Spot‑check: SAM3 synonym expansion outputs unchanged after sam3_synonyms refactor
 - Spot‑check: cluster handle mapping unchanged after cluster_handles refactor
+- Spot‑check: classifier default selection + labelmap matching unchanged after classifier_select refactor
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -244,6 +245,7 @@ Stage 2 — Prepass Service Extraction
    - Moved detection payload + YOLO norm helpers into utils/coords.py.
    - Moved SAM3 synonym generation + cache into services/sam3_synonyms.py.
    - Moved cluster handle/index helpers into services/cluster_handles.py.
+   - Moved classifier selection helpers into services/classifier_select.py.
 
    Helpers to move in Stage 2 (do not forget):
    - _normalize_labelmap_glossary
