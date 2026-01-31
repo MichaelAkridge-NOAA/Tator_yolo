@@ -224,6 +224,12 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: classifier batch sizing + proba batching unchanged after classifier_batch refactor
 - Spot‑check: detector NMS merge outputs unchanged after detector_merge refactor
 - Spot‑check: prepass cache meta includes glossary text + hash (new caching safety)
+- Spot‑check: glossary normalization + labelmap entry normalization unchanged after utils/glossary + utils/labels move
+- Spot‑check: window bbox normalization unchanged after utils/coords move
+- Spot‑check: recipe meta read/write unchanged after services/prepass_recipes move
+- Spot‑check: dataset glossary + qwen labelmap loaders unchanged after services/datasets move
+- Spot‑check: glossary library load/normalize unchanged after services/glossary_library move
+- Spot‑check: recipe threshold normalization unchanged after services/prepass_config move
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -258,14 +264,13 @@ Stage 2 — Prepass Service Extraction
    - Moved detector parameter clamping helpers into services/detector_params.py.
 
    Helpers to move in Stage 2 (do not forget):
-   - _normalize_labelmap_glossary
-   - _normalize_window_xyxy
-   - _normalize_labelmap_entries
-   - _write_prepass_recipe_meta / _load_prepass_recipe_meta
-   - _load_dataset_glossary / _load_glossary_library
-   - _normalize_glossary_name
-   - _normalize_recipe_thresholds
-   - _load_qwen_labelmap
+   - Completed: _normalize_labelmap_glossary (utils/glossary)
+   - Completed: _normalize_window_xyxy (utils/coords)
+   - Completed: _normalize_labelmap_entries (utils/labels)
+   - Completed: _write_prepass_recipe_meta / _load_prepass_recipe_meta (services/prepass_recipes)
+   - Completed: _load_dataset_glossary / _load_qwen_labelmap (services/datasets)
+   - Completed: _load_glossary_library / _normalize_glossary_name (services/glossary_library)
+   - Completed: _normalize_recipe_thresholds (services/prepass_config)
 
 Stage 3 — Calibration Service Extraction
 17. Create services/calibration.py; move job orchestration.
