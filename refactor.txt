@@ -215,6 +215,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: similarity expansion counts unchanged after prepass_similarity refactor
 - Spot‑check: background_classes derived from classifier head unchanged after classifier_utils refactor
 - Spot‑check: labelmap+glossary loading unchanged after datasets labelmap_meta refactor
+- Spot‑check: detector payload fields (bbox_2d/bbox_yolo) unchanged after coords det_payload refactor
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -238,6 +239,7 @@ Stage 2 — Prepass Service Extraction
      provenance helpers into services/prepass_provenance.py.
    - Moved background class helper into utils/classifier_utils.py.
    - Moved labelmap/glossary loader into services/datasets.py with local wrapper.
+   - Moved detection payload + YOLO norm helpers into utils/coords.py.
 
    Helpers to move in Stage 2 (do not forget):
    - _normalize_labelmap_glossary
