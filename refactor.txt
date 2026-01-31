@@ -270,6 +270,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: qwen training job serialization unchanged after services/qwen_jobs move
 - Spot‑check: clip training job serialization unchanged after services/classifier_jobs move
 - Spot‑check: sam3 training job serialization unchanged after services/sam3_jobs move
+- Spot‑check: detector job serialization unchanged after services/detector_jobs move
 - Spot‑check: dataset artifact purge unchanged after services/datasets move
 - Spot‑check: Qwen label collection unchanged after services/datasets move
 - Spot‑check: YOLO labelmap discovery unchanged after services/datasets move
@@ -524,3 +525,5 @@ Progress Log
   services/classifier_jobs.py and converted local wrapper.
 - Stage 2: moved SAM3 training job serializer into
   services/sam3_jobs.py and converted local wrapper.
+- Stage 2: moved YOLO/RF‑DETR/head‑graft job serializers into
+  services/detector_jobs.py and converted local wrappers.
