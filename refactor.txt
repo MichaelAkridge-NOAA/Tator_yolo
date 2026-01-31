@@ -266,6 +266,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: prepass recipe CRUD endpoints unchanged after services/prepass_recipes move
 - Spot‑check: prompt helper preset endpoints unchanged after services/prompt_helper_presets move
 - Spot‑check: prompt helper job serialization unchanged after services/prompt_helper move
+- Spot‑check: segmentation job serialization unchanged after services/segmentation move
 - Spot‑check: dataset artifact purge unchanged after services/datasets move
 - Spot‑check: Qwen label collection unchanged after services/datasets move
 - Spot‑check: YOLO labelmap discovery unchanged after services/datasets move
@@ -512,3 +513,5 @@ Progress Log
   services/datasets.py and converted local wrappers.
 - Stage 2: moved YOLO labelmap discovery helper into
   services/datasets.py and converted local wrapper.
+- Stage 2: moved segmentation job serializer into
+  services/segmentation.py and converted local wrapper.
