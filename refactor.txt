@@ -247,6 +247,8 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: deep prepass wrapper unchanged after services/prepass move
 - Spot‑check: deep prepass caption unchanged after services/prepass move
 - Spot‑check: legacy prepass wrapper unchanged after services/prepass move
+- Spot‑check: calibration prepass worker unchanged after services/calibration_helpers move
+- Spot‑check: qwen caption helper outputs unchanged after services/qwen move
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -258,7 +260,15 @@ Stage 2 — Prepass Service Extraction
     - Verify glossary text is stored in cache meta
     - Verify windowed/non‑windowed match expected counts
     - Verify detector full‑frame + SAHI both included
-    - Verify settings from UI propagate to prepass config
+   - Verify settings from UI propagate to prepass config
+
+Stage 2.5 — Qwen helpers (captioning + prompt expansion)
+17. Create services/qwen.py and move Qwen caption helpers + prompt expansion glue.
+18. Keep legacy wrappers in localinferenceapi.py to preserve API shape.
+19. Run Tier‑0 + Tier‑1 fuzz:
+    - Verify captioning full + windowed flows
+    - Verify synonym expansion prompt and output parsing
+    - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
    - Moved tile context helpers (cluster ownership, tile caption hints, tile payload)
@@ -296,6 +306,8 @@ Stage 2 — Prepass Service Extraction
    - Moved deep prepass wrapper into services/prepass.py.
    - Moved deep prepass caption into services/prepass.py.
    - Moved legacy prepass wrapper into services/prepass.py.
+   - Moved calibration prepass worker into services/calibration_helpers.py.
+   - Moved Qwen caption helper utilities into services/qwen.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
