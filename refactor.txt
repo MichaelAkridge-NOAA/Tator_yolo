@@ -349,6 +349,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved agent cascade import helpers into services/agent_cascades.py.
    - Moved prepass recipe directory/list/manifest helpers into services/prepass_recipes.py.
    - Moved prepass recipe asset collection helper into services/prepass_recipes.py.
+   - Moved prepass recipe import helper into services/prepass_recipes.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
@@ -480,4 +481,6 @@ Progress Log
 - Stage 2: moved prepass recipe directory/list/manifest helpers into
   services/prepass_recipes.py and converted local wrappers.
 - Stage 2: moved prepass recipe asset collection helper into
+  services/prepass_recipes.py and converted local wrapper.
+- Stage 2: moved prepass recipe import helper into
   services/prepass_recipes.py and converted local wrapper.
