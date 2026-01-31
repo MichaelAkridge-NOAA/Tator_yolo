@@ -203,6 +203,13 @@ Stage 1 — Utilities Extraction
 10. Update imports to use utils/ modules.
 11. Run Tier‑0 + Tier‑1 fuzz (check no change in output schema).
 
+Validation Backlog (run when GPUs are free)
+------------------------------------------
+- Run tools/run_fuzz_fast.sh (Tier‑0 + Tier‑1 in skip‑GPU mode)
+- Run tools/run_fuzz_fast.sh with SKIP_GPU=0 (full Tier‑1)
+- Confirm prepass endpoint responds with same schema (no missing fields)
+- Confirm caption endpoint returns full + windowed outputs
+
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
 13. Create services/prepass_config.py for defaults + validation.
