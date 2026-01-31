@@ -254,6 +254,7 @@ Stage 2 — Prepass Service Extraction
    - Moved overlay base/crop helpers into services/overlay_tools.py.
    - Moved classifier batching helpers into services/classifier_batch.py.
    - Moved detector NMS merge helpers into services/detector_merge.py.
+   - Moved detector parameter clamping helpers into services/detector_params.py.
 
    Helpers to move in Stage 2 (do not forget):
    - _normalize_labelmap_glossary
