@@ -235,6 +235,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: calibration image listing unchanged after services/calibration_helpers move
 - Spot‑check: calibration atomic write unchanged after services/calibration_helpers move
 - Spot‑check: calibration job update helper unchanged after services/calibration_helpers move
+- Spot‑check: calibration image cache token unchanged after services/calibration_helpers move
 - Spot‑check: readable logging (prepass.readable) unchanged after services/readable move
 
 Stage 2 — Prepass Service Extraction
@@ -274,6 +275,7 @@ Stage 2 — Prepass Service Extraction
    - Moved calibration image listing into services/calibration_helpers.py.
    - Moved calibration atomic record writer into services/calibration_helpers.py.
    - Moved calibration update helper into services/calibration_helpers.py.
+   - Moved calibration cache-image helper into services/calibration_helpers.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
