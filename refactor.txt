@@ -245,6 +245,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: deep prepass cleanup unchanged after services/prepass move
 - Spot‑check: deep prepass part A unchanged after services/prepass move
 - Spot‑check: deep prepass wrapper unchanged after services/prepass move
+- Spot‑check: deep prepass caption unchanged after services/prepass move
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -292,6 +293,7 @@ Stage 2 — Prepass Service Extraction
    - Moved deep prepass cleanup into services/prepass.py.
    - Moved deep prepass part A into services/prepass.py.
    - Moved deep prepass wrapper into services/prepass.py.
+   - Moved deep prepass caption into services/prepass.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
