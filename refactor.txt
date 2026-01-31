@@ -212,6 +212,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: cluster label counts + overlay summaries unchanged after helper extraction
 - Spot‑check: get_tile_context tile_cluster_list + caption_hint unchanged after tile_context refactor
 - Spot‑check: prepass window generation (sam3_text + similarity) unchanged after prepass_windows refactor
+- Spot‑check: similarity expansion counts unchanged after prepass_similarity refactor
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -231,6 +232,8 @@ Stage 2 — Prepass Service Extraction
    - Moved prepass window helpers (sam3_text + similarity windows, exemplar filter)
      into services/prepass_windows.py; moved _slice_image_sahi to utils/image.py and
      _resolve_agent_bbox_xyxy to utils/coords.py.
+   - Moved similarity expansion helpers into services/prepass_similarity.py and
+     provenance helpers into services/prepass_provenance.py.
 
    Helpers to move in Stage 2 (do not forget):
    - _normalize_labelmap_glossary
