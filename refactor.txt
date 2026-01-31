@@ -221,6 +221,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: classifier default selection + labelmap matching unchanged after classifier_select refactor
 - Spot‑check: grid tool usage tracking unchanged after prepass_grid usage refactor
 - Spot‑check: overlay crop bbox selection unchanged after overlay_tools refactor
+- Spot‑check: classifier batch sizing + proba batching unchanged after classifier_batch refactor
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -250,6 +251,7 @@ Stage 2 — Prepass Service Extraction
    - Moved classifier selection helpers into services/classifier_select.py.
    - Moved grid tool usage helpers into services/prepass_grid.py.
    - Moved overlay base/crop helpers into services/overlay_tools.py.
+   - Moved classifier batching helpers into services/classifier_batch.py.
 
    Helpers to move in Stage 2 (do not forget):
    - _normalize_labelmap_glossary
