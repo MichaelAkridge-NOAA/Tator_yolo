@@ -231,6 +231,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: qwen dataset signature helpers unchanged after services/datasets move
 - Spot‑check: dataset metadata helpers unchanged after services/datasets move
 - Spot‑check: qwen dataset metadata load/persist unchanged after services/datasets move
+- Spot‑check: sam3 dataset metadata load/persist unchanged after services/datasets move
 - Spot‑check: glossary library load/normalize unchanged after services/glossary_library move
 - Spot‑check: recipe threshold normalization unchanged after services/prepass_config move
 - Spot‑check: SAM3 availability guard unchanged after services/prepass_config move
@@ -539,6 +540,8 @@ Progress Log
 - Stage 2: moved dataset metadata helpers into
   services/datasets.py and converted local wrappers.
 - Stage 2: moved Qwen dataset metadata helpers into
+  services/datasets.py and converted local wrappers.
+- Stage 2: moved SAM3 dataset metadata helpers into
   services/datasets.py and converted local wrappers.
 - Stage 2: moved segmentation job serializer into
   services/segmentation.py and converted local wrapper.
