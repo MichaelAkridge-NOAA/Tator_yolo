@@ -445,3 +445,5 @@ Progress Log
   services/prepass_recipes.py and converted local wrappers.
 - Stage 1: moved YOLO run-id + directory signature helpers into utils/io.py
   and converted local wrappers.
+- Stage 1: moved labelmap/dataset signature helpers into services/datasets.py
+  and converted local wrappers.
