@@ -261,6 +261,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: agent cascade endpoints unchanged after services/agent_cascades move
 - Spot‑check: agent cascade import endpoints unchanged after services/agent_cascades move
 - Spot‑check: prepass recipe list/delete/import/export endpoints unchanged after services/prepass_recipes move
+- Spot‑check: prepass recipe asset export bundle unchanged after services/prepass_recipes move
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -347,6 +348,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved agent cascade persistence helpers into services/agent_cascades.py.
    - Moved agent cascade import helpers into services/agent_cascades.py.
    - Moved prepass recipe directory/list/manifest helpers into services/prepass_recipes.py.
+   - Moved prepass recipe asset collection helper into services/prepass_recipes.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
@@ -477,3 +479,5 @@ Progress Log
   services/agent_cascades.py and converted local wrappers.
 - Stage 2: moved prepass recipe directory/list/manifest helpers into
   services/prepass_recipes.py and converted local wrappers.
+- Stage 2: moved prepass recipe asset collection helper into
+  services/prepass_recipes.py and converted local wrapper.
