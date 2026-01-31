@@ -435,3 +435,5 @@ Progress Log
   converted local wrappers.
 - Stage 1: moved dataset resolution helpers into services/datasets.py and
   converted local wrappers.
+- Stage 1: moved dataset integrity helpers into services/datasets.py and
+  converted local wrappers.
