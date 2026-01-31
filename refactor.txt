@@ -266,6 +266,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: prepass recipe CRUD endpoints unchanged after services/prepass_recipes move
 - Spot‑check: prompt helper preset endpoints unchanged after services/prompt_helper_presets move
 - Spot‑check: dataset artifact purge unchanged after services/datasets move
+- Spot‑check: Qwen label collection unchanged after services/datasets move
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -358,6 +359,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved prepass recipe CRUD helpers into services/prepass_recipes.py.
    - Moved prompt helper preset helpers into services/prompt_helper_presets.py.
    - Moved dataset artifact purge helper into services/datasets.py.
+   - Moved Qwen label collection helpers into services/datasets.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
@@ -500,3 +502,5 @@ Progress Log
   services/prompt_helper_presets.py and converted local wrappers.
 - Stage 2: moved dataset artifact purge helper into
   services/datasets.py and converted local wrapper.
+- Stage 2: moved Qwen label collection helpers into
+  services/datasets.py and converted local wrappers.
