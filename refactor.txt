@@ -1,0 +1,292 @@
+Refactor Plan (Incremental + Fuzz-Verified)
+==========================================
+
+Goal
+----
+Clean up unused code and refactor the monolithic backend into maintainable
+modules without breaking behavior. This will be done incrementally and
+validated by a fuzzing/smoke test after *every* change batch.
+
+
+Part A — Cleanup Strategy (Dead Code)
+-------------------------------------
+We will not delete code based on “looks unused” alone. Instead we will use a
+triple-check approach and *validate every deletion* with tests.
+
+Signals for deletion:
+1) Static usage:
+   - No route decorator
+   - Not called inside module (AST call graph)
+   - Not referenced by docs/scripts
+2) Runtime behavior:
+   - Fuzz test coverage confirms removal does not break key endpoints
+3) Optional manual check:
+   - Code is not dynamically invoked (e.g. string name lookup)
+
+Deletion happens in small batches (20–40 functions) so we can isolate errors.
+
+
+Part B — Refactor Target Structure
+----------------------------------
+
+tator/
+  api/
+    prepass.py
+    calibration.py
+    datasets.py
+    detectors.py
+    classifiers.py
+    qwen.py
+    sam3.py
+    jobs.py
+    headgraft.py
+  services/
+    prepass.py
+    calibration.py
+    detectors.py
+    sam3.py
+    qwen.py
+    classifier.py
+    dataset_manager.py
+    recipes.py
+    model_registry.py
+  models/
+    schemas.py
+    jobs.py
+    recipes.py
+  storage/
+    datasets.py
+    cache.py
+    jobs.py
+  utils/
+    io.py
+    image.py
+    logging.py
+    labels.py
+
+The legacy localinferenceapi.py remains as a shim that just attaches routers.
+
+
+Part C — Incremental Fuzz/Smoke Validation Plan (Required)
+----------------------------------------------------------
+We replace the “week of logging” approach with *incremental fuzzing*.
+Every change batch must pass fuzz tests *before moving on*.
+
+Principles:
+1) Each batch is small (single feature or a small file extraction).
+2) After every batch, run a targeted fuzz/smoke test suite.
+3) Keep a rolling “minimal test pack” that executes in ~1–3 minutes.
+4) If tests fail, revert or fix immediately (no piling up broken work).
+
+Test tiers:
+  Tier 0 (smoke): request/response validation on core endpoints
+  Tier 1 (fuzz lite): randomized but bounded inputs for prepass & calibration
+  Tier 2 (fuzz deep): optional full pipeline with real sample images
+
+We run Tier 0 + Tier 1 on *every batch*.
+Tier 2 is run after larger milestones.
+
+
+Part D — Fuzz Pack Specification
+-------------------------------
+Create a minimal, deterministic test pack with:
+- 2–4 small sample images
+- a tiny labelmap
+- 1 detector config, 1 classifier config, 1 SAM3 config
+- 1 glossary with 3–5 classes
+
+Fuzz steps:
+1) Start API
+2) Validate /datasets, /models, /glossary endpoints
+3) Run a single prepass with tiny max_images
+4) Run calibration with cached prepass
+5) Run captioning (single image)
+6) Run detector run with both full-frame + windowed
+7) Confirm results are schema-valid and non-empty
+
+All fuzz runs should:
+- enforce deterministic random seeds
+- run under tight timeouts (fail fast)
+- produce a single structured JSON summary for regression comparison
+
+
+Part E — Safe Refactor Order (each step fuzzed)
+-----------------------------------------------
+1) Extract utils/ (image, labels, io) → run Tier 0/1 fuzz
+2) Extract prepass services → fuzz
+3) Extract calibration services → fuzz
+4) Extract detector registry + inference → fuzz
+5) Extract classifier registry + inference → fuzz
+6) Extract SAM3 + Qwen helpers → fuzz
+7) Replace route handlers with api/* routers → fuzz
+8) Remove unused legacy code → fuzz
+
+
+Part F — Regression Rules
+-------------------------
+We do not proceed if:
+- Any fuzz test fails
+- Any output schema changes unexpectedly
+- Any calibration metrics regresses by >2% absolute without explanation
+
+If regression occurs:
+- Identify which batch caused it
+- Fix immediately or roll back
+
+
+Outcome
+-------
+By the end of this sequence:
+- localinferenceapi.py is reduced to a router loader
+- all core logic lives in services/
+- unused code is removed with confidence
+- fuzz tests keep behavior stable throughout
+
+
+Atomic Task List (Executable Roadmap)
+-------------------------------------
+These are the exact, itemized tasks to perform in order. Each item is a
+stand‑alone atomic change with required fuzz/smoke validation afterward.
+
+Testing/Validation Rule for Every Step
+- After each step (or step batch), run Tier‑0 + Tier‑1 fuzz.
+- Record a regression summary JSON and diff against baseline.
+- If any schema changes or metrics regress >2% without explanation: stop, fix,
+  re‑run.
+- Every step must include a “safety check” line in notes: what could break,
+  and how we verified it did not.
+
+Prep / Baseline
+1. Create a minimal deterministic “fuzz pack” dataset (2–4 images + tiny
+   labelmap + sample glossary) in a new folder under tests/fixtures/.
+   - Include: labelmap.txt, glossary.json, 2–4 images, optional labels
+   - Keep image sizes small to reduce GPU cost
+   - Store a small manifest.json with hashes for images + labelmap + glossary
+   - Validate manifest hashes at test start
+2. Create Tier‑0 smoke test script:
+   - Start/reuse API
+   - Hit /health + /datasets + /models + /glossaries
+   - Validate schemas and required fields
+   - Assert non‑empty fields: datasets=[], models=[], glossaries=[]
+   - Ensure API returns 200 and JSON parses under strict schema
+3. Create Tier‑1 fuzz‑lite script (must cover all options):
+   - Prepass: detectors only (YOLO+RF‑DETR), SAM3 text only, SAM3 similarity only
+   - Prepass: windowed SAM3 text ON + similarity ON
+   - Prepass: windowed OFF (baseline)
+   - Calibration: MLP + XGB on same cache
+   - Caption: full‑frame + windowed captioning
+   - Detector: full‑frame + SAHI
+   - Classifier: batch scoring with full probability vector
+   - Ensure both detector models are requested in the same run
+   - Ensure glossary hash + text are recorded in cache meta
+4. Add regression summary output (JSON):
+   - For each step: detections count, class distribution, cache count
+   - For calibration: precision/recall/F1
+   - Track hashes for glossary/labelmap/recipe
+   - Track “pipeline_version” and “config_hash”
+   - Track counts per source (yolo/rfdetr/sam3_text/sam3_similarity)
+5. Add a runner script:
+   - Executes Tier‑0 then Tier‑1
+   - Fixed seeds; emits baseline diff report
+   - Optional “fast mode” to skip heavy SAM3/Qwen
+   - Exits non‑zero if any diff in required fields
+
+Stage 1 — Utilities Extraction
+6. Identify image/label/io helper functions in localinferenceapi.py.
+   - Create a mapping table (function name → new module)
+7. Move image helpers to utils/image.py (preserve signature).
+   - Add unit tests for any non‑trivial helper (resize, tiling, bbox conversion)
+8. Move label helpers to utils/labels.py (preserve labelmap behavior).
+   - Add tests for labelmap parsing and label alignment
+9. Move IO helpers to utils/io.py (no path changes).
+   - Add tests for JSON/YAML loading (with json5 fallback)
+10. Update imports to use utils/ modules.
+11. Run Tier‑0 + Tier‑1 fuzz (check no change in output schema).
+
+Stage 2 — Prepass Service Extraction
+12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
+13. Create services/prepass_config.py for defaults + validation.
+14. Ensure prepass config includes all toggles (windowed, thresholds, detectors).
+15. Update API handlers to call services/prepass.py.
+16. Run Tier‑0 + Tier‑1 fuzz:
+    - Verify cached prepass reuse
+    - Verify glossary text is stored in cache meta
+    - Verify windowed/non‑windowed match expected counts
+    - Verify detector full‑frame + SAHI both included
+    - Verify settings from UI propagate to prepass config
+
+Stage 3 — Calibration Service Extraction
+17. Create services/calibration.py; move job orchestration.
+18. Create services/calibration_metrics.py for eval logic.
+19. Ensure MLP and XGB paths are both wired + selectable.
+20. Update API handlers to call services/calibration.py.
+21. Run Tier‑0 + Tier‑1 fuzz:
+    - Verify both calibration models run
+    - Verify metric schema consistent
+    - Verify dedupe/eval IoU settings applied correctly
+    - Verify classifier required guard works
+    - Verify missing detectors fail fast
+
+Stage 4 — Detector Registry + Inference
+22. Create services/detectors.py for model loading + inference.
+23. Create services/detector_registry.py for active model selection.
+24. Ensure detector selection supports multiple models per run.
+25. Update detector endpoints to call services/detectors.py.
+26. Run Tier‑0 + Tier‑1 fuzz:
+    - Verify full‑frame + SAHI outputs
+    - Verify missing weights error handling
+    - Verify RF‑DETR labelmap mismatch throws error
+    - Verify concurrency guard prevents overlapping inference
+
+Stage 5 — Classifier Registry + Inference
+27. Create services/classifier.py for batch inference.
+28. Create services/classifier_registry.py for active model selection.
+29. Ensure full per‑class probability vectors are returned.
+30. Update classifier endpoints to call services/classifier.py.
+31. Run Tier‑0 + Tier‑1 fuzz:
+    - Verify batch inference works
+    - Verify score vectors preserved
+    - Verify GPU OOM fallback reduces batch size
+
+Stage 6 — SAM3 + Qwen Helpers
+32. Create services/sam3.py (text + similarity + windowed helpers).
+33. Create services/qwen.py (captioning + glossary expansion).
+34. Ensure SAM3 text + similarity use image‑first cache order.
+35. Ensure Qwen prompt expansion is capped by per‑class config.
+36. Update endpoints to call services/sam3.py + services/qwen.py.
+37. Run Tier‑0 + Tier‑1 fuzz:
+    - Verify windowed SAM3 text/similarity
+    - Verify glossary expansion prompt consistency
+    - Verify captioning runs full + windowed
+    - Verify caption prompt avoids labelmap tokens
+
+Stage 7 — Router Split
+38. Create api/prepass.py with APIRouter and move prepass routes.
+39. Create api/calibration.py and move calibration routes.
+40. Create api/detectors.py, api/classifiers.py, api/qwen.py, api/sam3.py.
+41. Update localinferenceapi.py to include routers only.
+42. Run Tier‑0 + Tier‑1 fuzz:
+    - Confirm endpoint paths unchanged
+    - Confirm OpenAPI routes intact
+    - Confirm UI still loads all tabs (manual smoke check)
+
+Stage 8 — Dead Code Removal
+43. Generate a dead‑code report (AST + route inventory).
+44. Remove a small batch of unused functions (20–40).
+45. Run Tier‑0 + Tier‑1 fuzz tests.
+46. Repeat steps 43–45 until no high‑confidence dead code remains.
+    - Keep a log of removed functions for audit
+
+Stage 9 — Final Verification
+47. Run Tier‑2 fuzz (full pipeline on 2–4 images).
+48. Run end‑to‑end benchmark on 10‑image subset.
+49. Compare regression summary to baseline (<=2% variance).
+50. Update Readme with new architecture diagram and migration notes.
+    - Include “what moved where” mapping table
+
+Stage 10 — Cleanup + Docs
+51. Add module docstrings to services/ + api/ files.
+52. Update developer docs to reference new module locations.
+53. Remove any vestigial import shims or compatibility hacks.
+54. Final Tier‑0 + Tier‑1 fuzz run.
+    - Confirm all scripts reference new module paths
