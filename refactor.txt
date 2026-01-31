@@ -242,6 +242,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: tile context payloads unchanged after services/tile_context move
 - Spot‑check: readable logging (prepass.readable) unchanged after services/readable move
 - Spot‑check: similarity exemplar selection unchanged after services/prepass move
+- Spot‑check: deep prepass cleanup unchanged after services/prepass move
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -286,6 +287,7 @@ Stage 2 — Prepass Service Extraction
    - Moved overlay view helpers into services/overlay_views.py.
    - Moved tile context payload builder into services/tile_context.py.
    - Moved similarity exemplar selector into services/prepass.py.
+   - Moved deep prepass cleanup into services/prepass.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
