@@ -328,6 +328,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved clip head background guard settings helper into services/classifier.py.
    - Moved clip model inference helper into services/classifier.py.
    - Moved clip auto-predict label/details helpers into services/classifier.py.
+   - Moved clip head scoring helper into services/classifier.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
