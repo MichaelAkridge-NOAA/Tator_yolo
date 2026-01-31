@@ -274,6 +274,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: qwen training metric append unchanged after services/qwen_jobs move
 - Spot‑check: clip training job serialization unchanged after services/classifier_jobs move
 - Spot‑check: clip training job logging/update unchanged after services/classifier_jobs move
+- Spot‑check: clip training job metric append unchanged after services/classifier_jobs move
 - Spot‑check: sam3 training job serialization unchanged after services/sam3_jobs move
 - Spot‑check: sam3 training job log/update unchanged after services/sam3_jobs move
 - Spot‑check: detector job serialization unchanged after services/detector_jobs move
@@ -540,6 +541,8 @@ Progress Log
   services/classifier_jobs.py and converted local wrapper.
 - Stage 2: moved CLIP training job log/update helpers into
   services/classifier_jobs.py and converted local wrappers.
+- Stage 2: moved CLIP training job metric append into
+  services/classifier_jobs.py and converted local wrapper.
 - Stage 2: moved SAM3 training job serializer into
   services/sam3_jobs.py and converted local wrapper.
 - Stage 2: moved SAM3 training job log/update helpers into
