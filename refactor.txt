@@ -239,6 +239,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: SAM3 prompt variants unchanged after services/sam3_synonyms move
 - Spot‑check: context store/chunk behavior unchanged after services/context_store move
 - Spot‑check: overlay view cell/full payloads unchanged after services/overlay_views move
+- Spot‑check: tile context payloads unchanged after services/tile_context move
 - Spot‑check: readable logging (prepass.readable) unchanged after services/readable move
 
 Stage 2 — Prepass Service Extraction
@@ -282,6 +283,7 @@ Stage 2 — Prepass Service Extraction
    - Moved SAM3 prompt variant helper into services/sam3_synonyms.py.
    - Moved agent context store/chunk wrappers into services/context_store.py.
    - Moved overlay view helpers into services/overlay_views.py.
+   - Moved tile context payload builder into services/tile_context.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
