@@ -425,3 +425,5 @@ Progress Log
 ------------
 - Stage 3: moved seed‑stage prompt subset + step config helpers into
   services/calibration_metrics.py and converted local wrappers.
+- Stage 3: moved step recipe builder + clip prefilter crop sampler into
+  services/calibration_metrics.py and converted local wrappers.
