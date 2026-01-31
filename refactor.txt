@@ -210,6 +210,7 @@ Validation Backlog (run when GPUs are free)
 - Confirm prepass endpoint responds with same schema (no missing fields)
 - Confirm caption endpoint returns full + windowed outputs
 - Spot‑check: cluster label counts + overlay summaries unchanged after helper extraction
+- Spot‑check: get_tile_context tile_cluster_list + caption_hint unchanged after tile_context refactor
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -222,6 +223,10 @@ Stage 2 — Prepass Service Extraction
     - Verify windowed/non‑windowed match expected counts
     - Verify detector full‑frame + SAHI both included
     - Verify settings from UI propagate to prepass config
+
+   Stage 2 progress notes
+   - Moved tile context helpers (cluster ownership, tile caption hints, tile payload)
+     into services/tile_context.py and updated get_tile_context to use them.
 
    Helpers to move in Stage 2 (do not forget):
    - _normalize_labelmap_glossary
