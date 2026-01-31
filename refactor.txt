@@ -334,6 +334,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved CLIP labelmap/classifier listing helpers into services/classifier.py.
    - Moved prompt evaluation helpers into services/calibration_metrics.py.
    - Moved prompt expansion helpers into services/qwen.py.
+   - Moved seed-threshold + step-selection helpers into services/calibration_metrics.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
