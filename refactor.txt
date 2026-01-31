@@ -441,3 +441,5 @@ Progress Log
   services/glossary_library.py and converted local wrappers.
 - Stage 1: moved YOLO/RF‑DETR training dataset resolution into
   services/datasets.py and converted local wrappers.
+- Stage 1: moved agent recipe parsing/validation helpers into
+  services/prepass_recipes.py and converted local wrappers.
