@@ -267,6 +267,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: prompt helper preset endpoints unchanged after services/prompt_helper_presets move
 - Spot‑check: prompt helper job serialization unchanged after services/prompt_helper move
 - Spot‑check: segmentation job serialization unchanged after services/segmentation move
+- Spot‑check: segmentation job log/update unchanged after services/segmentation move
 - Spot‑check: qwen training job serialization unchanged after services/qwen_jobs move
 - Spot‑check: qwen training GET logging unchanged after services/qwen_jobs move
 - Spot‑check: qwen training job log/update unchanged after services/qwen_jobs move
@@ -523,6 +524,8 @@ Progress Log
 - Stage 2: moved YOLO labelmap discovery helper into
   services/datasets.py and converted local wrapper.
 - Stage 2: moved segmentation job serializer into
+  services/segmentation.py and converted local wrapper.
+- Stage 2: moved segmentation job log/update helpers into
   services/segmentation.py and converted local wrapper.
 - Stage 2: moved Qwen training job serializer into
   services/qwen_jobs.py and converted local wrapper.
