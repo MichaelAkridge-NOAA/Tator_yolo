@@ -222,6 +222,16 @@ Stage 2 — Prepass Service Extraction
     - Verify detector full‑frame + SAHI both included
     - Verify settings from UI propagate to prepass config
 
+   Helpers to move in Stage 2 (do not forget):
+   - _normalize_labelmap_glossary
+   - _normalize_window_xyxy
+   - _normalize_labelmap_entries
+   - _write_prepass_recipe_meta / _load_prepass_recipe_meta
+   - _load_dataset_glossary / _load_glossary_library
+   - _normalize_glossary_name
+   - _normalize_recipe_thresholds
+   - _load_qwen_labelmap
+
 Stage 3 — Calibration Service Extraction
 17. Create services/calibration.py; move job orchestration.
 18. Create services/calibration_metrics.py for eval logic.
