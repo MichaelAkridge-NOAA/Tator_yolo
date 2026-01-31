@@ -447,3 +447,5 @@ Progress Log
   and converted local wrappers.
 - Stage 1: moved labelmap/dataset signature helpers into services/datasets.py
   and converted local wrappers.
+- Stage 4: moved YOLO/RF‑DETR run metadata + metrics helpers into
+  services/detectors.py and converted local wrappers.
