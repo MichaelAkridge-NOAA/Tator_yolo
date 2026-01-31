@@ -254,6 +254,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: detector inference outputs unchanged after services/detectors move
 - Spot‑check: detector runtime caching unchanged after services/detectors move
 - Spot‑check: detector active/default configs unchanged after services/detectors move
+- Spot‑check: classifier review + batching outputs unchanged after services/classifier move
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
@@ -318,6 +319,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved detector inference tool into services/detectors.py.
    - Moved detector runtime loaders into services/detectors.py.
    - Moved detector active/default config helpers into services/detectors.py.
+   - Moved classifier review/batching helpers into services/classifier.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
