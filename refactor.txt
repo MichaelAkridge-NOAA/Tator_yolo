@@ -323,6 +323,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved classifier path resolve + head load + proba helpers into services/classifier.py.
    - Moved classifier keep-mask helper into services/classifier.py.
    - Moved classifier normalize-embeddings resolver into services/classifier.py.
+   - Moved active head normalize resolver into services/classifier.py.
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
