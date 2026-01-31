@@ -209,6 +209,7 @@ Validation Backlog (run when GPUs are free)
 - Run tools/run_fuzz_fast.sh with SKIP_GPU=0 (full Tier‑1)
 - Confirm prepass endpoint responds with same schema (no missing fields)
 - Confirm caption endpoint returns full + windowed outputs
+- Spot‑check: cluster label counts + overlay summaries unchanged after helper extraction
 
 Stage 2 — Prepass Service Extraction
 12. Create services/prepass.py; move prepass pipeline (detectors + SAM3 + dedupe).
