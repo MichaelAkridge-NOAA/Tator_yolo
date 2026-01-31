@@ -420,3 +420,8 @@ Stage 10 — Cleanup + Docs
 53. Remove any vestigial import shims or compatibility hacks.
 54. Final Tier‑0 + Tier‑1 fuzz run.
     - Confirm all scripts reference new module paths
+
+Progress Log
+------------
+- Stage 3: moved seed‑stage prompt subset + step config helpers into
+  services/calibration_metrics.py and converted local wrappers.
