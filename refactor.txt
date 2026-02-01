@@ -241,6 +241,8 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: localinferenceapi import cleanup doesn't alter endpoint behavior (start API, hit /health)
 - Spot‑check: glossary library load remains intact after helper pruning
 - Spot‑check: prepass grid usage summaries unchanged after grid helper pruning
+- Spot‑check: calibration prompt/candidate endpoints still work after metrics helper pruning
+- Spot‑check: classifier head tuning endpoints still work after classifier helper pruning
 - Spot‑check: YOLO→COCO conversion unchanged after datasets move
 - Spot‑check: Qwen→COCO conversion unchanged after datasets move
 - Spot‑check: COCO→YOLO conversion unchanged after datasets move
@@ -663,6 +665,7 @@ Progress Log
 - Stage 8: pruned unused imports in localinferenceapi.py (prepass/grid/coords/overlay/llm/readable/classifier/calibration_metrics/qwen).
 - Stage 8: removed unused helpers in services/prepass + services/prepass_grid + services/datasets + services/prepass_recipes + services/qwen + services/readable.
 - Stage 8: removed unused helpers in utils (coords remap, image size, io atomic/json writers, parsing device IDs, overlay data URI, trace sanitize messages) and deleted utils/text.py + utils/llm.py.
+- Stage 8: removed unused helpers in services/classifier + services/calibration_metrics + services/readable (post-clean).
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
