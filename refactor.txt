@@ -245,6 +245,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: classifier head tuning endpoints still work after classifier helper pruning
 - Spot‑check: import cleanup doesn't alter runtime behavior (basic /health + /datasets endpoints)
 - Spot‑check: Tier‑1 fuzz handles classifier-required calibration (skip or include classifier_id)
+- Run tools/run_refactor_validation.sh (py_compile + Tier‑0/Tier‑1 skip‑GPU)
 - Spot‑check: YOLO→COCO conversion unchanged after datasets move
 - Spot‑check: Qwen→COCO conversion unchanged after datasets move
 - Spot‑check: COCO→YOLO conversion unchanged after datasets move
@@ -670,6 +671,7 @@ Progress Log
 - Stage 8: removed unused helpers in services/classifier + services/calibration_metrics + services/readable (post-clean).
 - Stage 8: pruned unused imports across services/utils (detectors/datasets/prepass/etc.); ignored vendor libs.
 - Stage 8: pruned unused imports in tools scripts (detect_missclassifications, qwen_training, train_ensemble_mlp/xgb).
+- Stage 9: added tools/run_refactor_validation.sh (py_compile + Tier‑0/Tier‑1 wrapper).
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
