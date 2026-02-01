@@ -238,6 +238,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: COCO image path/label relpath unchanged after utils/image move
 - Spot‑check: Qwen JSONL label extraction unchanged after datasets move
 - Spot‑check: YOLO labelmap discovery unchanged after datasets move
+- Spot‑check: localinferenceapi import cleanup doesn't alter endpoint behavior (start API, hit /health)
 - Spot‑check: YOLO→COCO conversion unchanged after datasets move
 - Spot‑check: Qwen→COCO conversion unchanged after datasets move
 - Spot‑check: COCO→YOLO conversion unchanged after datasets move
@@ -657,6 +658,7 @@ Progress Log
 - Stage 8: re‑wired GPU device ID validation in RF‑DETR training (uses utils/gpu).
 - Stage 8: removed unused prepass recipe import hooks in localinferenceapi.py.
 - Stage 8: removed unused glossary library imports in localinferenceapi.py.
+- Stage 8: pruned unused imports in localinferenceapi.py (prepass/grid/coords/overlay/llm/readable/classifier/calibration_metrics/qwen).
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
