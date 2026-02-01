@@ -396,6 +396,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - Removed unused app/qwen_agent_runtime.py (no references; static scan + grep confirmed).
    - Ran scan_unused_defs (module-level only); flags agent mining + prompt helper + segmentation endpoints as count<=1 (likely only referenced by routes). Keep for manual review in Stage 2.
    - Removed unused qwen_agent.settings import in localinferenceapi (ruff F401).
    - Added module docstrings across utils/* (classifier_utils, coco, coords, datasets, errors, glossary, gpu, hashing, image, io, labels, network, overlay, parsing, trace_utils).
