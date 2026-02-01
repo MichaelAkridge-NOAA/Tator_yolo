@@ -263,6 +263,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: calibration orchestration unchanged after services/calibration move
 - Spot‑check: detector inference outputs unchanged after services/detectors move
 - Spot‑check: detector runtime caching unchanged after services/detectors move
+- Spot‑check: detector infer state setters unchanged after services/detectors move
 - Spot‑check: detector active/default configs unchanged after services/detectors move
 - Spot‑check: classifier review + batching outputs unchanged after services/classifier move
 - Spot‑check: agent recipe list/delete endpoints unchanged after services/prepass_recipes move
@@ -523,6 +524,8 @@ Progress Log
 - Stage 1: moved labelmap mismatch helpers into utils/labels.py and updated
   local wrappers.
 - Stage 1: moved SAM3 run listing helpers into services/sam3_runs.py and
+  updated local wrappers.
+- Stage 1: moved detector infer state setters into services/detectors.py and
   updated local wrappers.
 - Stage 2: moved agent cascade import helpers into
   services/agent_cascades.py and converted local wrappers.
