@@ -232,6 +232,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: COCO info/write/ensure helpers unchanged after utils/coco move
 - Spot‑check: path_is_within_root helper unchanged after utils/io move
 - Spot‑check: classifier resolve/load wrappers unchanged after refactor import cleanup
+- Spot‑check: validate_cuda_device_ids helper unchanged after utils/gpu move
 - Spot‑check: YOLO data.yaml writer unchanged after services/detectors move
 - Spot‑check: YOLO variant YAML + detect module helpers unchanged after services/detectors move
 - Spot‑check: RF‑DETR DDP worker unchanged after services/detectors move
@@ -596,6 +597,8 @@ Progress Log
 - Stage 1: moved path_is_within_root helper into utils/io.py and converted
   local wrapper.
 - Stage 2: restored classifier resolve/load wrappers after classifier service move.
+- Stage 1: moved validate_cuda_device_ids helper into utils/gpu.py and converted
+  local wrapper.
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
