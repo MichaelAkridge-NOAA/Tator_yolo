@@ -655,6 +655,7 @@ Progress Log
 - Stage 8: removed unused service impls (legacy agent prepass, clip mining loader,
   calibration midpoints/replay, qwen prompt self-filter, dataset signature helpers).
 - Stage 8: re‑wired GPU device ID validation in RF‑DETR training (uses utils/gpu).
+- Stage 8: removed unused prepass recipe import hooks in localinferenceapi.py.
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
