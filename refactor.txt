@@ -224,6 +224,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: classifier batch sizing + proba batching unchanged after classifier_batch refactor
 - Spot‑check: detector NMS merge outputs unchanged after detector_merge refactor
 - Spot‑check: prepass cache meta includes glossary text + hash (new caching safety)
+- Spot‑check: prepass cache writes glossary.json alongside prepass.meta.json
 - Spot‑check: glossary normalization + labelmap entry normalization unchanged after utils/glossary + utils/labels move
 - Spot‑check: labelmap mismatch guard unchanged after utils/labels move
 - Spot‑check: window bbox normalization unchanged after utils/coords move
@@ -255,6 +256,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: Qwen runtime reset unchanged after services/qwen_runtime move
 - Spot‑check: Qwen runtime unload unchanged after services/qwen_runtime move
 - Spot‑check: Qwen caption cache eviction unchanged after services/qwen_runtime move
+- Spot‑check: Qwen caption runtime loader unchanged after services/qwen_runtime move
 - Spot‑check: Qwen variant resolver unchanged after services/qwen move
 - Spot‑check: Qwen model suffix handling unchanged after services/qwen move
 - Spot‑check: Qwen load error formatting unchanged after services/qwen move
@@ -654,3 +656,5 @@ Progress Log
   services/detector_jobs.py and converted local wrappers.
 - Stage 2: moved head‑graft job log/update helpers into
   services/detector_jobs.py and converted local wrappers.
+- Stage 2.5: moved Qwen caption runtime loader into
+  services/qwen_runtime.py and converted local wrapper.
