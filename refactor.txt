@@ -219,6 +219,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: YOLO/RF‑DETR extract outputs unchanged after services/detectors move
 - Spot‑check: detector image cache resolution unchanged after services/detectors move
 - Spot‑check: YOLO device arg/p2 scale helpers unchanged after services/detectors move
+- Spot‑check: RF‑DETR variant/checkpoint/log helpers unchanged after services/detectors move
 - Spot‑check: SAM3 synonym expansion outputs unchanged after sam3_synonyms refactor
 - Spot‑check: cluster handle mapping unchanged after cluster_handles refactor
 - Spot‑check: classifier default selection + labelmap matching unchanged after classifier_select refactor
@@ -543,6 +544,8 @@ Progress Log
 - Stage 4: moved detector image resolver into services/detectors.py and
   converted local wrapper.
 - Stage 4: moved YOLO device arg + p2 scale helpers into services/detectors.py
+  and converted local wrappers.
+- Stage 4: moved RF‑DETR variant/checkpoint/log helpers into services/detectors.py
   and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
   and converted local wrapper.
