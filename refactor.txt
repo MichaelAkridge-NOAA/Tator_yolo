@@ -255,6 +255,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: Qwen runtime unload unchanged after services/qwen_runtime move
 - Spot‑check: Qwen caption cache eviction unchanged after services/qwen_runtime move
 - Spot‑check: inference runtime unloads unchanged after services/runtime_unload move
+- Spot‑check: training runtime prepare/finalize unchanged after services/runtime_unload move
 - Spot‑check: DINOv3 device resolution unchanged after services/dinov3_runtime move
 - Spot‑check: CLIP backbone suspend/resume unchanged after services/clip_runtime move
 - Spot‑check: CLIP mining backbone load unchanged after services/clip_runtime move
@@ -553,6 +554,8 @@ Progress Log
   and updated local wrapper.
 - Stage 1: moved inference runtime unload helpers into services/runtime_unload.py
   and updated local wrappers.
+- Stage 1: moved training runtime prepare/finalize helpers into
+  services/runtime_unload.py and updated local wrappers.
 - Stage 1: moved DINOv3 device resolver into services/dinov3_runtime.py and
   updated local wrapper.
 - Stage 1: moved CLIP backbone suspend/resume helpers into services/clip_runtime.py
