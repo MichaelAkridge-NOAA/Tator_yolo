@@ -397,6 +397,8 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - scan_unused_defs now skips decorated defs by default; use --include-decorated to scan route handlers.
+   - Removed unused imports in tools/detect_missclassifications.py and tools/fuzz_tier1.py (ruff F401).
    - Fixed scan_unused_defs word-boundary counting (counts now show route handlers count=1; ignore decorated endpoints).
    - Removed unused config.py (no imports/references found).
    - Removed unused app/qwen_agent_runtime.py (no references; static scan + grep confirmed).
