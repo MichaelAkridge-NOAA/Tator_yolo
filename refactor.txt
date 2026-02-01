@@ -289,6 +289,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: clip training job metric append unchanged after services/classifier_jobs move
 - Spot‑check: sam3 training job serialization unchanged after services/sam3_jobs move
 - Spot‑check: sam3 training job log/update unchanged after services/sam3_jobs move
+- Spot‑check: sam3 run listing unchanged after services/sam3_runs move
 - Spot‑check: detector job serialization unchanged after services/detector_jobs move
 - Spot‑check: detector job log/update unchanged after services/detector_jobs move
 - Spot‑check: head‑graft job log/update unchanged after services/detector_jobs move
@@ -521,6 +522,8 @@ Progress Log
   services/agent_cascades.py and converted local wrappers.
 - Stage 1: moved labelmap mismatch helpers into utils/labels.py and updated
   local wrappers.
+- Stage 1: moved SAM3 run listing helpers into services/sam3_runs.py and
+  updated local wrappers.
 - Stage 2: moved agent cascade import helpers into
   services/agent_cascades.py and converted local wrappers.
 - Stage 2: moved prepass recipe directory/list/manifest helpers into
