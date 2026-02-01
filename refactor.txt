@@ -223,6 +223,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: RF‑DETR metric sanitize + aug policy unchanged after services/detectors move
 - Spot‑check: RF‑DETR augmentation install/restore unchanged after services/detectors move
 - Spot‑check: RF‑DETR checkpoint epoch helper unchanged after services/detectors move
+- Spot‑check: RF‑DETR training monitor loop unchanged after services/detectors move
 - Spot‑check: SAM3 synonym expansion outputs unchanged after sam3_synonyms refactor
 - Spot‑check: cluster handle mapping unchanged after cluster_handles refactor
 - Spot‑check: classifier default selection + labelmap matching unchanged after classifier_select refactor
@@ -556,6 +557,8 @@ Progress Log
   services/detectors.py and converted local wrappers.
 - Stage 4: moved RF‑DETR checkpoint epoch helper into services/detectors.py
   and converted local wrapper.
+- Stage 4: moved RF‑DETR monitor training loop into services/detectors.py and
+  converted local wrapper.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
   and converted local wrapper.
 - Stage 2: moved agent recipe delete/list helpers into
