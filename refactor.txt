@@ -253,6 +253,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: SAM3 backend selection unchanged after services/sam3_runtime move
 - Spot‑check: Qwen runtime reset unchanged after services/qwen_runtime move
 - Spot‑check: Qwen runtime unload unchanged after services/qwen_runtime move
+- Spot‑check: inference runtime unloads unchanged after services/runtime_unload move
 - Spot‑check: context store/chunk behavior unchanged after services/context_store move
 - Spot‑check: overlay view cell/full payloads unchanged after services/overlay_views move
 - Spot‑check: tile context payloads unchanged after services/tile_context move
@@ -542,6 +543,8 @@ Progress Log
 - Stage 1: moved SAM3 backend selector into services/sam3_runtime.py and
   updated local wrapper.
 - Stage 1: moved Qwen runtime reset/unload helpers into services/qwen_runtime.py
+  and updated local wrappers.
+- Stage 1: moved inference runtime unload helpers into services/runtime_unload.py
   and updated local wrappers.
 - Stage 2: moved agent cascade import helpers into
   services/agent_cascades.py and converted local wrappers.
