@@ -397,6 +397,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - Removed unused load_labelmap/save_yolo_file helpers in tools/detect_missclassifications.py.
    - Removed unused services/glossary_library.py (no references after cleanup).
    - Removed unused GLOSSARY_LIBRARY_* constants in localinferenceapi.py (no references).
    - Documented scan_unused_defs in tools/README.md.
