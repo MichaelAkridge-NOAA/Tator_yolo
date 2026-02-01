@@ -251,6 +251,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: SAM3 device resolution unchanged after services/sam3_runtime move
 - Spot‑check: SAM3 runtime reset unchanged after services/sam3_runtime move
 - Spot‑check: SAM3 backend selection unchanged after services/sam3_runtime move
+- Spot‑check: SAM3 text runtime load unchanged after services/sam3_runtime move
 - Spot‑check: Qwen runtime reset unchanged after services/qwen_runtime move
 - Spot‑check: Qwen runtime unload unchanged after services/qwen_runtime move
 - Spot‑check: Qwen caption cache eviction unchanged after services/qwen_runtime move
@@ -550,6 +551,8 @@ Progress Log
 - Stage 1: moved SAM3 runtime reset helper into services/sam3_runtime.py and
   updated local wrapper.
 - Stage 1: moved SAM3 backend selector into services/sam3_runtime.py and
+  updated local wrapper.
+- Stage 1: moved SAM3 text runtime loader into services/sam3_runtime.py and
   updated local wrapper.
 - Stage 1: moved Qwen runtime reset/unload helpers into services/qwen_runtime.py
   and updated local wrappers.
