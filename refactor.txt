@@ -228,6 +228,8 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: checkpoint optimizer stripping unchanged after services/detectors move
 - Spot‑check: YOLO/RF‑DETR labelmap loaders unchanged after services/detectors move
 - Spot‑check: RF‑DETR dataset prep/remap unchanged after services/detectors move
+- Spot‑check: base64 image decode unchanged after utils/image move
+- Spot‑check: COCO info/write/ensure helpers unchanged after utils/coco move
 - Spot‑check: YOLO data.yaml writer unchanged after services/detectors move
 - Spot‑check: YOLO variant YAML + detect module helpers unchanged after services/detectors move
 - Spot‑check: RF‑DETR DDP worker unchanged after services/detectors move
@@ -587,6 +589,8 @@ Progress Log
 - Stage 1: moved stable hash helper into utils/hashing.py and converted wrapper.
 - Stage 1: moved base64 image decode helper into utils/image.py and converted
   wrapper.
+- Stage 1: moved COCO info/write/ensure helpers into utils/coco.py and converted
+  local wrappers.
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
