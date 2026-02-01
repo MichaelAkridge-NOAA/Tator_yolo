@@ -396,6 +396,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - Dropped localinferenceapi _serialize_job/_serialize_qwen_job wrappers; endpoints call services.* directly.
    - Dropped localinferenceapi _serialize_calibration_job wrapper; endpoints use services.calibration helper directly.
    - Updated requirements.txt SAM3 comment to avoid removed docs reference.
    - scan_unused_defs now returns no module-level candidates (decorated endpoints ignored).
