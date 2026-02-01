@@ -250,6 +250,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: prepass endpoints still route through deep prepass after legacy wrapper cleanup
 - Spot‑check: COCO info/segmentation helpers still invoked via services after wrapper cleanup
 - Spot‑check: calibration prompt expansion still uses services/qwen after prompt wrapper cleanup
+- Spot‑check: Qwen dataset metadata persist still invoked via services/datasets after wrapper cleanup
 - Spot‑check: YOLO data.yaml writer unchanged after services/detectors move
 - Spot‑check: YOLO variant YAML + detect module helpers unchanged after services/detectors move
 - Spot‑check: RF‑DETR DDP worker unchanged after services/detectors move
@@ -647,6 +648,7 @@ Progress Log
   helpers, CLIP mining loader wrapper, prompt self-filter, calibration helpers,
   Qwen prompt config setter, dataset signature wrapper, label-id validator,
   pruning helpers).
+- Stage 8: removed unused Qwen dataset metadata persist wrapper.
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
