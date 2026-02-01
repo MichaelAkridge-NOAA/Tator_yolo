@@ -248,6 +248,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: calibration image cache token unchanged after services/calibration_helpers move
 - Spot‑check: SAM3 prompt variants unchanged after services/sam3_synonyms move
 - Spot‑check: SAM3 cache clearing unchanged after services/sam3_runtime move
+- Spot‑check: SAM3 device resolution unchanged after services/sam3_runtime move
 - Spot‑check: context store/chunk behavior unchanged after services/context_store move
 - Spot‑check: overlay view cell/full payloads unchanged after services/overlay_views move
 - Spot‑check: tile context payloads unchanged after services/tile_context move
@@ -530,6 +531,8 @@ Progress Log
   updated local wrappers.
 - Stage 1: moved SAM3 cache clearing helper into services/sam3_runtime.py and
   updated local wrapper.
+- Stage 1: moved SAM3 device resolution helpers into services/sam3_runtime.py
+  and updated local wrappers.
 - Stage 2: moved agent cascade import helpers into
   services/agent_cascades.py and converted local wrappers.
 - Stage 2: moved prepass recipe directory/list/manifest helpers into
