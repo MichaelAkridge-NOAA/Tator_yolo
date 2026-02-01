@@ -216,6 +216,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: background_classes derived from classifier head unchanged after classifier_utils refactor
 - Spot‑check: labelmap+glossary loading unchanged after datasets labelmap_meta refactor
 - Spot‑check: detector payload fields (bbox_2d/bbox_yolo) unchanged after coords det_payload refactor
+- Spot‑check: YOLO/RF‑DETR extract outputs unchanged after services/detectors move
 - Spot‑check: SAM3 synonym expansion outputs unchanged after sam3_synonyms refactor
 - Spot‑check: cluster handle mapping unchanged after cluster_handles refactor
 - Spot‑check: classifier default selection + labelmap matching unchanged after classifier_select refactor
@@ -535,6 +536,8 @@ Progress Log
   services/detectors.py and converted local wrappers.
 - Stage 4: moved YOLO/RF‑DETR run listing helpers into services/detectors.py
   and converted local wrappers.
+- Stage 4: moved YOLO/RF‑DETR extract helpers into services/detectors.py and
+  converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
   and converted local wrapper.
 - Stage 2: moved agent recipe delete/list helpers into
