@@ -397,6 +397,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - Removed unused GLOSSARY_LIBRARY_* constants in localinferenceapi.py (no references).
    - Documented scan_unused_defs in tools/README.md.
    - Removed unused model.py (standalone CLIP implementation; no imports/references found).
    - scan_unused_defs now skips decorated defs by default; use --include-decorated to scan route handlers.
