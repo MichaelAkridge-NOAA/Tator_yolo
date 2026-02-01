@@ -240,6 +240,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: YOLO labelmap discovery unchanged after datasets move
 - Spot‑check: YOLO→COCO conversion unchanged after datasets move
 - Spot‑check: Qwen→COCO conversion unchanged after datasets move
+- Spot‑check: COCO→YOLO conversion unchanged after datasets move
 - Spot‑check: YOLO data.yaml writer unchanged after services/detectors move
 - Spot‑check: YOLO variant YAML + detect module helpers unchanged after services/detectors move
 - Spot‑check: RF‑DETR DDP worker unchanged after services/detectors move
@@ -619,6 +620,8 @@ Progress Log
 - Stage 1: moved YOLO→COCO conversion into services/datasets.py and converted
   local wrapper.
 - Stage 1: moved Qwen→COCO conversion into services/datasets.py and converted
+  local wrapper.
+- Stage 1: moved COCO→YOLO conversion into services/datasets.py and converted
   local wrapper.
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
