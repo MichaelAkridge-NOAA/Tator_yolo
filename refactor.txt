@@ -396,6 +396,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - scan_unused_defs now returns no module-level candidates (decorated endpoints ignored).
    - Removed stray qwen_agentic_calib_strict_1img.json artifact.
    - Added optional RUN_UNUSED_SCAN=1 flag to tools/run_refactor_validation.sh (documented in tools/README.md).
    - Added module docstring to localinferenceapi.py.
