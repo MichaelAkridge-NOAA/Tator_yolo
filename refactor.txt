@@ -259,6 +259,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: Qwen model suffix handling unchanged after services/qwen move
 - Spot‑check: Qwen load error formatting unchanged after services/qwen move
 - Spot‑check: Qwen device selection unchanged after services/qwen_runtime move
+- Spot‑check: Qwen prompt config get/set unchanged after services/qwen move
 - Spot‑check: inference runtime unloads unchanged after services/runtime_unload move
 - Spot‑check: training runtime prepare/finalize unchanged after services/runtime_unload move
 - Spot‑check: DINOv3 device resolution unchanged after services/dinov3_runtime move
@@ -563,6 +564,7 @@ Progress Log
 - Stage 1: moved Qwen model suffix handler into services/qwen.py and updated local wrapper.
 - Stage 1: moved Qwen load error formatter into services/qwen.py and updated local wrapper.
 - Stage 1: moved Qwen device resolver into services/qwen_runtime.py and updated local wrapper.
+- Stage 1: moved Qwen prompt config get/set into services/qwen.py and updated local wrappers.
 - Stage 1: moved inference runtime unload helpers into services/runtime_unload.py
   and updated local wrappers.
 - Stage 1: moved training runtime prepare/finalize helpers into
