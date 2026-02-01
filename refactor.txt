@@ -395,6 +395,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - Added module docstrings across remaining service helpers (agent_cascades, classifier_batch/runtime/select, clip_runtime, cluster helpers, context store, detector merge/params, dinov3 runtime, glossary library, overlay tools/views, prepass provenance/recipes, prompt helper/presets, readable, sam3 runs/synonyms, segmentation, tile context).
    - Moved tile context helpers (cluster ownership, tile caption hints, tile payload)
      into services/tile_context.py and updated get_tile_context to use them.
    - Moved prepass window helpers (sam3_text + similarity windows, exemplar filter)
