@@ -253,6 +253,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: Qwen dataset metadata persist still invoked via services/datasets after wrapper cleanup
 - Spot‑check: agent mining CLIP backbone still loads via services/clip_runtime after impl cleanup (no missing references)
 - Spot‑check: hard-negative replay export UI still behaves (no missing refs) after calibration_metrics cleanup
+- Spot‑check: RF‑DETR training rejects invalid device IDs after GPU validation wiring
 - Spot‑check: YOLO data.yaml writer unchanged after services/detectors move
 - Spot‑check: YOLO variant YAML + detect module helpers unchanged after services/detectors move
 - Spot‑check: RF‑DETR DDP worker unchanged after services/detectors move
@@ -653,6 +654,7 @@ Progress Log
 - Stage 8: removed unused Qwen dataset metadata persist wrapper.
 - Stage 8: removed unused service impls (legacy agent prepass, clip mining loader,
   calibration midpoints/replay, qwen prompt self-filter, dataset signature helpers).
+- Stage 8: re‑wired GPU device ID validation in RF‑DETR training (uses utils/gpu).
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
