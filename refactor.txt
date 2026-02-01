@@ -672,7 +672,7 @@ Progress Log
 - Stage 8: pruned unused imports across services/utils (detectors/datasets/prepass/etc.); ignored vendor libs.
 - Stage 8: pruned unused imports in tools scripts (detect_missclassifications, qwen_training, train_ensemble_mlp/xgb).
 - Stage 9: added tools/run_refactor_validation.sh (py_compile + Tier‑0/Tier‑1 wrapper).
-- Stage 10: added module docstrings to core services (prepass, calibration, detectors, qwen, classifier, calibration_metrics, datasets, prepass_windows/similarity/grid).
+- Stage 10: added module docstrings to core services (prepass, calibration, detectors, qwen, classifier, calibration_metrics, datasets, prepass_windows/similarity/grid, qwen_runtime, sam3_runtime, *_jobs, runtime_unload, calibration_helpers, prepass_config).
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
