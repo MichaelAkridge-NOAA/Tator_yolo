@@ -244,6 +244,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: calibration prompt/candidate endpoints still work after metrics helper pruning
 - Spot‑check: classifier head tuning endpoints still work after classifier helper pruning
 - Spot‑check: import cleanup doesn't alter runtime behavior (basic /health + /datasets endpoints)
+- Spot‑check: Tier‑1 fuzz handles classifier-required calibration (skip or include classifier_id)
 - Spot‑check: YOLO→COCO conversion unchanged after datasets move
 - Spot‑check: Qwen→COCO conversion unchanged after datasets move
 - Spot‑check: COCO→YOLO conversion unchanged after datasets move
