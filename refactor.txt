@@ -396,6 +396,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - Added optional RUN_UNUSED_SCAN=1 flag to tools/run_refactor_validation.sh (documented in tools/README.md).
    - Added module docstring to localinferenceapi.py.
    - Updated tools/README.md with --include-tests flag for scan_unused_defs.
    - Removed docs/_local/*.txt briefs/logs (archived elsewhere).
