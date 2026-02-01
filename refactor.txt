@@ -257,6 +257,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: inference runtime unloads unchanged after services/runtime_unload move
 - Spot‑check: DINOv3 device resolution unchanged after services/dinov3_runtime move
 - Spot‑check: CLIP backbone suspend/resume unchanged after services/clip_runtime move
+- Spot‑check: classifier backbone resume unchanged after services/classifier_runtime move
 - Spot‑check: context store/chunk behavior unchanged after services/context_store move
 - Spot‑check: overlay view cell/full payloads unchanged after services/overlay_views move
 - Spot‑check: tile context payloads unchanged after services/tile_context move
@@ -555,6 +556,8 @@ Progress Log
   updated local wrapper.
 - Stage 1: moved CLIP backbone suspend/resume helpers into services/clip_runtime.py
   and updated local wrappers.
+- Stage 1: moved classifier backbone resume helper into services/classifier_runtime.py
+  and updated local wrapper.
 - Stage 2: moved agent cascade import helpers into
   services/agent_cascades.py and converted local wrappers.
 - Stage 2: moved prepass recipe directory/list/manifest helpers into
