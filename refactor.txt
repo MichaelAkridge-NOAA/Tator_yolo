@@ -254,6 +254,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: Qwen runtime reset unchanged after services/qwen_runtime move
 - Spot‑check: Qwen runtime unload unchanged after services/qwen_runtime move
 - Spot‑check: Qwen caption cache eviction unchanged after services/qwen_runtime move
+- Spot‑check: Qwen variant resolver unchanged after services/qwen move
 - Spot‑check: inference runtime unloads unchanged after services/runtime_unload move
 - Spot‑check: training runtime prepare/finalize unchanged after services/runtime_unload move
 - Spot‑check: DINOv3 device resolution unchanged after services/dinov3_runtime move
@@ -552,6 +553,7 @@ Progress Log
   and updated local wrappers.
 - Stage 1: moved Qwen caption cache eviction helper into services/qwen_runtime.py
   and updated local wrapper.
+- Stage 1: moved Qwen variant resolver into services/qwen.py and updated local wrapper.
 - Stage 1: moved inference runtime unload helpers into services/runtime_unload.py
   and updated local wrappers.
 - Stage 1: moved training runtime prepare/finalize helpers into
