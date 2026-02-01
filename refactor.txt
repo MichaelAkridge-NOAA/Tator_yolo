@@ -225,6 +225,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: detector NMS merge outputs unchanged after detector_merge refactor
 - Spot‑check: prepass cache meta includes glossary text + hash (new caching safety)
 - Spot‑check: glossary normalization + labelmap entry normalization unchanged after utils/glossary + utils/labels move
+- Spot‑check: labelmap mismatch guard unchanged after utils/labels move
 - Spot‑check: window bbox normalization unchanged after utils/coords move
 - Spot‑check: recipe meta read/write unchanged after services/prepass_recipes move
 - Spot‑check: dataset glossary + qwen labelmap loaders unchanged after services/datasets move
@@ -518,6 +519,8 @@ Progress Log
   services/prepass_recipes.py and converted local wrappers.
 - Stage 2: moved agent cascade helpers into
   services/agent_cascades.py and converted local wrappers.
+- Stage 1: moved labelmap mismatch helpers into utils/labels.py and updated
+  local wrappers.
 - Stage 2: moved agent cascade import helpers into
   services/agent_cascades.py and converted local wrappers.
 - Stage 2: moved prepass recipe directory/list/manifest helpers into
