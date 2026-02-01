@@ -229,6 +229,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: YOLO/RF‑DETR labelmap loaders unchanged after services/detectors move
 - Spot‑check: RF‑DETR dataset prep/remap unchanged after services/detectors move
 - Spot‑check: YOLO data.yaml writer unchanged after services/detectors move
+- Spot‑check: YOLO variant YAML + detect module helpers unchanged after services/detectors move
 - Spot‑check: SAM3 synonym expansion outputs unchanged after sam3_synonyms refactor
 - Spot‑check: cluster handle mapping unchanged after cluster_handles refactor
 - Spot‑check: classifier default selection + labelmap matching unchanged after classifier_select refactor
@@ -574,6 +575,8 @@ Progress Log
   and converted local wrappers.
 - Stage 4: moved YOLO data.yaml writer into services/detectors.py and converted
   local wrapper.
+- Stage 4: moved YOLO model source + variant YAML helpers + detect module helpers
+  into services/detectors.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
   and converted local wrapper.
 - Stage 2: moved agent recipe delete/list helpers into
