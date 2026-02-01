@@ -585,6 +585,8 @@ Progress Log
   local wrapper.
 - Stage 1: moved free-port helper into utils/network.py and converted wrapper.
 - Stage 1: moved stable hash helper into utils/hashing.py and converted wrapper.
+- Stage 1: moved base64 image decode helper into utils/image.py and converted
+  wrapper.
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
