@@ -192,6 +192,7 @@ Prep / Baseline
    - Exits non‑zero if any diff in required fields
 
 Stage 1 — Utilities Extraction
+5a. Add tools/scan_unused_defs.py to surface likely-unused defs (heuristic, count<=1). Use as a guide for safe deletions.
 6. Identify image/label/io helper functions in localinferenceapi.py.
    - Create a mapping table (function name → new module)
 7. Move image helpers to utils/image.py (preserve signature).
