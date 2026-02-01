@@ -232,6 +232,7 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: YOLO variant YAML + detect module helpers unchanged after services/detectors move
 - Spot‑check: RF‑DETR DDP worker unchanged after services/detectors move
 - Spot‑check: head‑graft audit + force‑stop unchanged after services/detector_jobs move
+- Spot‑check: free-port helper unchanged after utils/network move
 - Spot‑check: SAM3 synonym expansion outputs unchanged after sam3_synonyms refactor
 - Spot‑check: cluster handle mapping unchanged after cluster_handles refactor
 - Spot‑check: classifier default selection + labelmap matching unchanged after classifier_select refactor
@@ -581,6 +582,7 @@ Progress Log
   into services/detectors.py and converted local wrappers.
 - Stage 4: moved RF‑DETR DDP worker into services/detectors.py and converted
   local wrapper.
+- Stage 1: moved free-port helper into utils/network.py and converted wrapper.
 - Stage 2: moved head‑graft audit + force‑stop helpers into
   services/detector_jobs.py and converted local wrappers.
 - Stage 3: moved hard‑negative export helper into services/calibration_metrics.py
