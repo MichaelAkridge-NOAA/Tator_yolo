@@ -192,7 +192,7 @@ Prep / Baseline
    - Exits non‑zero if any diff in required fields
 
 Stage 1 — Utilities Extraction
-5a. Add tools/scan_unused_defs.py to surface likely-unused defs (heuristic, count<=1). Use as a guide for safe deletions.
+5a. Add tools/scan_unused_defs.py (excludes Qwen-Agent/Qwen3-VL/rf-detr/sam3/sahi by default) to surface likely-unused defs (heuristic, count<=1). Use as a guide for safe deletions.
 6. Identify image/label/io helper functions in localinferenceapi.py.
    - Create a mapping table (function name → new module)
 7. Move image helpers to utils/image.py (preserve signature).
@@ -396,6 +396,7 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
     - Verify labelmap/glossary handling unchanged
 
    Stage 2 progress notes
+   - Ran scan_unused_defs (module-level only); flags agent mining + prompt helper + segmentation endpoints as count<=1 (likely only referenced by routes). Keep for manual review in Stage 2.
    - Removed unused qwen_agent.settings import in localinferenceapi (ruff F401).
    - Added module docstrings across utils/* (classifier_utils, coco, coords, datasets, errors, glossary, gpu, hashing, image, io, labels, network, overlay, parsing, trace_utils).
    - Added module docstrings across remaining service helpers (agent_cascades, classifier_batch/runtime/select, clip_runtime, cluster helpers, context store, detector merge/params, dinov3 runtime, glossary library, overlay tools/views, prepass provenance/recipes, prompt helper/presets, readable, sam3 runs/synonyms, segmentation, tile context).
