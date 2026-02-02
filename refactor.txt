@@ -1649,9 +1649,9 @@ Progress Log
 - 2026-02-02: Stage 9 — manual py_compile run on models/*.py succeeded.
 - 2026-02-02: Stage 9 — ran run_refactor_validation.sh with SKIP_FUZZ=1
   (py_compile only). No errors.
-- 2026-02-02: Stage 9 — attempted Tier‑0/Tier‑1 (SKIP_GPU=1) via
-  tools/run_refactor_validation.sh, but the run timed out waiting for
-  /system/health_summary (API likely busy). Needs re‑run when API free.
+- 2026-02-02: Stage 9 — re-ran Tier‑0/Tier‑1 (SKIP_GPU=1) via
+  tools/run_refactor_validation.sh. Tier‑0 passed. Tier‑1 skip‑GPU
+  succeeded with GPU-dependent steps skipped. Logs in /tmp/tator_fuzz.
 - 2026-02-02: Stage 10 — staged new refactor modules (api/, models/,
   services/qwen_generation.py) so they don’t remain untracked.
 - 2026-02-02: Stage 8 — second pass confirms no additional high-confidence
