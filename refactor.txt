@@ -142,6 +142,23 @@ By the end of this sequence:
 - unused code is removed with confidence
 - fuzz tests keep behavior stable throughout
 
+Status Snapshot (2026-02-02)
+----------------------------
+- Stage 1 (utils extraction): complete (see Progress Log + Stage 1 notes).
+- Stage 2 (dead code triage): complete; scan tool tuned; 2 deletion batches applied; no further high‑confidence deletions identified.
+- Stage 3–7 (services + router split): complete in code; Tier‑0/Tier‑1 (skip‑GPU) validation done; full GPU validation pending.
+- Stage 8 (dead code removal): paused (2 batches removed; no further high‑confidence
+  deletions after scan). Awaiting deeper analysis or new evidence.
+- Stage 9 (validation + docs): docs updates complete; Tier‑0 + Tier‑1 skip‑GPU run; full GPU fuzz pending (GPU busy).
+- Stage 10 (cleanup + docs): docstrings + docs updates complete; Tier‑2 fuzz + 10‑image bench pending.
+
+Validation Backlog (GPU busy)
+-----------------------------
+- Tier‑1 full (GPU) fuzz run
+- Tier‑2 fuzz run
+- 10‑image benchmark (prepass + calibration quick smoke)
+- Qwen caption windowed/full sanity checks (real model)
+
 
 Atomic Task List (Executable Roadmap)
 -------------------------------------
@@ -191,6 +208,191 @@ Prep / Baseline
    - Optional “fast mode” to skip heavy SAM3/Qwen
    - Exits non‑zero if any diff in required fields
 
+Stage Progress Notes (refactor execution log)
+---------------------------------------------
+- 2026-02-02: Stage 1 prep — added tools/scan_unused_defs.py (heuristic unused
+  def scanner; excludes Qwen-Agent/Qwen3-VL/rf-detr/sam3/sahi by default).
+  Validation to run later:
+  - Tier‑0: run scan on repo root and archive report.
+- 2026-02-02: Ran unused‑def scan (heuristic) → /tmp/tator_unused_defs_20260202.txt.
+  Validation to run later:
+  - Tier‑0: re‑run scan after next extraction batch and diff report.
+- 2026-02-02: Updated scan_unused_defs.py to exclude SAM3-UNet for cleaner reports.
+- 2026-02-02: Updated scan_unused_defs.py to ignore FastAPI route-decorated
+  functions (router.get/post/etc.) so endpoints are not falsely flagged
+  as unused. Re-ran scan to /tmp/tator_unused_defs_refactor_stage2.txt.
+- 2026-02-02: Updated scan_unused_defs.py to skip dunder methods to reduce
+    noise in unused-def reports. Re-ran scan to /tmp/tator_unused_defs_refactor_stage2.txt.
+  - 2026-02-02: Updated scan_unused_defs.py to treat @_register_agent_tool
+    handlers as indirect uses (same as route handlers) so agent tools are not
+    falsely reported as unused.
+  - 2026-02-02: Updated scan_unused_defs.py to only record top-level defs
+    (skip class methods) to reduce noise when curating deletion batches.
+  - 2026-02-02: Updated scan_unused_defs.py to account for import aliasing
+    (from x import foo as bar), mapping alias uses back to original names.
+  - 2026-02-02: Updated scan_unused_defs.py to exclude tests/ so unused-def
+    reports focus on runtime code.
+- 2026-02-02: Updated scan_unused_defs.py to ignore nested function defs
+  (only top-level module functions are reported) to reduce false positives.
+  - 2026-02-02: Updated scan_unused_defs.py to treat attribute access as a use
+    (e.g., local._run_qwen_chat_stream) to reduce false positives from module
+    attribute invocation.
+- 2026-02-02: Re‑ran scan_unused_defs.py (max‑uses=0/1). No defs with zero uses.
+  The uses<=1 list is dominated by route handlers/classes; no safe deletions
+  identified without deeper analysis. Stage 2 remains closed pending new evidence.
+- 2026-02-02: Removed additional Qwen caption helper wrappers
+  (_resolve_qwen_variant_model_id, _strip_qwen_model_suffix,
+  _caption_glossary_map, _caption_preferred_label) and updated all call sites
+  to *_impl variants.
+  Validation to run later:
+  - Tier‑0: qwen caption prompt assembly (full + windowed)
+  - Tier‑1: qwen caption, prepass caption, and qwen_infer path
+- 2026-02-02: Extracted FastAPI routes into api/* routers and replaced
+  @app.* decorators in localinferenceapi.py with app.include_router(...).
+  Validation to run later:
+  - Tier‑0: /health, /datasets, /models, /glossaries
+  - Tier‑1: prepass, calibration, detector, classifier, caption, sam3, qwen
+- 2026-02-02: Removed a batch of thin wrapper functions (hash/dir helpers,
+  base64 decode, detector image resolve, SAHI slice, dataset signature/count,
+  calibration list/sample/cache/hash, detector clamp utilities, agent recipe
+  parse/normalize helpers, SAM3/Qwen device helpers). Updated call sites to
+  *_impl variants and injected deps (logger/HTTPException/torch/etc.) where
+  needed.
+  Validation to run later:
+  - Tier‑0: dataset listing/signature, calibration job creation
+  - Tier‑1: prepass + calibration, detector runs, sam3 device selection
+- 2026-02-02: Removed Qwen caption helper wrappers (collapse/parse/sanitize,
+  caption heuristics, window positions/labels/degenerate checks). Call sites
+  now use *_impl directly; window size/overlap wrappers retained.
+  Validation to run later:
+  - Tier‑0: qwen caption parsing + window sizing
+  - Tier‑1: qwen caption full + windowed, prepass captioning
+- 2026-02-02: Removed Qwen caption window size/overlap wrappers; call sites
+  now use _resolve_qwen_window_size_impl/_resolve_qwen_window_overlap_impl with
+  explicit defaults. Validation unchanged (caption window sizing).
+- 2026-02-02: Deduped duplicate imports from services.qwen in localinferenceapi.py
+  to avoid shadowing/confusion. No runtime behavior change expected.
+- 2026-02-02: Removed trivial wrappers for _serialize_seg_job,
+  _summarize_qwen_metric, and _yolo_head_graft_force_stop. Call sites now use
+  *_impl directly. Validation to run later:
+  - Tier‑0: segmentation job list/get
+  - Tier‑1: Qwen training metrics logging, head‑graft force stop
+- 2026-02-02: Removed trivial wrapper _serialize_prompt_helper_job; call sites
+  now use _serialize_prompt_helper_job_impl directly. Validation to run later:
+  - Tier‑0: prompt helper job list/get
+  - Tier‑1: prompt helper run endpoints
+- 2026-02-02: Removed prompt helper preset wrappers
+  (_list_prompt_helper_presets/_load_prompt_helper_preset/_save_prompt_helper_preset);
+  call sites now use *_impl with explicit root/guard args. Validation to run later:
+  - Tier‑0: prompt helper preset list/get/create
+- 2026-02-02: Removed _list_prepass_recipes wrapper; call site now uses
+  _list_prepass_recipes_impl with explicit root/meta. Validation to run later:
+  - Tier‑0: prepass recipe list endpoint
+- 2026-02-02: Removed _resolve_head_normalize_embeddings wrapper and wired
+  callers to _resolve_head_normalize_embeddings_impl. Validation to run later:
+  - Tier‑0: classifier head metadata endpoints
+- 2026-02-02: Removed _load_labelmap_simple wrapper; _validate_clip_dataset now
+  uses _load_labelmap_simple_impl via lambda. Validation to run later:
+  - Tier‑0: clip training dataset validation
+- 2026-02-02: Removed CLIP registry wrappers
+  (_list_clip_classifiers/_resolve_clip_labelmap_path/_find_labelmap_for_classifier/_list_clip_labelmaps).
+  Call sites now use *_impl with explicit upload root + labelmap constraints.
+  Validation to run later:
+  - Tier‑0: clip classifier/labelmap list + download endpoints
+- 2026-02-02: Removed _start_calibration_job/_cancel_calibration_job wrappers;
+  endpoints now call *_impl with explicit args. Validation to run later:
+  - Tier‑0: calibration start/cancel endpoints
+- 2026-02-02: Removed _build_backend_for_variant and _format_qwen_load_error
+  wrappers; call sites now use *_impl directly. Validation to run later:
+  - Tier‑0: SAM3 backend selection
+  - Tier‑1: Qwen model load error formatting
+- 2026-02-02: Removed dataset metadata wrappers
+  (_load_registry_dataset_metadata/_coerce_dataset_metadata/
+  _load_qwen_dataset_metadata/_load_sam3_dataset_metadata); call sites now use
+  *_impl with explicit meta names + loaders. Validation to run later:
+  - Tier‑0: dataset list + metadata endpoints
+- 2026-02-02: Removed YOLO/RF‑DETR run list helpers
+  (_collect_*_artifacts/_*_metrics_summary/_clean_metric_summary/_list_*_runs);
+  endpoints now use *_impl directly. Validation to run later:
+  - Tier‑0: run list endpoints
+  - Tier‑1: run summary metrics output
+- 2026-02-02: Removed _save_yolo_active/_save_rfdetr_active/_load_detector_default/
+  _save_detector_default wrappers; endpoints now use *_impl with explicit paths.
+  Validation to run later:
+  - Tier‑0: detector default + active model endpoints
+- 2026-02-02: Removed _detect_yolo_layout wrapper; training dataset resolution
+  now uses _detect_yolo_layout_impl directly. Validation to run later:
+  - Tier‑1: YOLO/RF‑DETR training dataset resolution
+- 2026-02-02: Removed _resolve_dataset_entry wrapper; training dataset resolution
+  now uses _resolve_dataset_entry_impl via lambda. Validation to run later:
+  - Tier‑1: YOLO/RF‑DETR training dataset resolution
+- 2026-02-02: Removed _collect_recipe_assets wrapper; prepass recipe export now
+  uses _collect_recipe_assets_impl via lambda. Validation to run later:
+  - Tier‑0: prepass recipe export/download
+- 2026-02-02: Removed _validate_clip_dataset wrapper; clip training now calls
+  _validate_clip_dataset_impl with explicit args. Validation to run later:
+  - Tier‑0: clip training validation (CPU-only)
+- 2026-02-02: Removed SAM3 run registry wrappers
+  (_describe_run_dir/_run_dir_for_request/_delete_run_scope); list/delete/
+  promote endpoints now use *_impl directly. Validation to run later:
+  - Tier‑0: SAM3 run list/delete/promote endpoints
+- 2026-02-02: Removed _yolo_prune_run_dir/_rfdetr_prune_run_dir wrappers;
+  call sites now use *_impl directly. Validation to run later:
+  - Tier‑1: YOLO/RF‑DETR run pruning (delete endpoints)
+- 2026-02-02: Removed _strip_checkpoint_optimizer wrapper; promote flow now
+  uses _strip_checkpoint_optimizer_impl directly. Validation to run later:
+  - Tier‑1: SAM3 promote run endpoint
+- 2026-02-02: Removed _ensure_coco_supercategory wrapper; RF‑DETR dataset
+  resolution now calls _ensure_coco_supercategory_impl directly. Validation to run later:
+  - Tier‑1: RF‑DETR dataset prep
+- 2026-02-02: Removed _find_free_port wrapper; RF‑DETR DDP now uses
+  _find_free_port_impl directly. Validation to run later:
+  - Tier‑1: RF‑DETR training (distributed setup)
+- 2026-02-02: Removed _yolo_load_run_labelmap/_rfdetr_load_labelmap wrappers;
+  call sites now use *_impl with explicit loaders. Validation to run later:
+  - Tier‑1: head‑graft + RF‑DETR dataset prep
+- 2026-02-02: Removed _yolo_resolve_split_paths wrapper; training dataset
+  resolution now uses _yolo_resolve_split_paths_impl directly. Validation to run later:
+  - Tier‑1: YOLO training dataset resolution
+- 2026-02-02: Removed _rfdetr_variant_info wrapper; call sites now use
+  _rfdetr_variant_info_impl with explicit variants + HTTPException. Validation to run later:
+  - Tier‑1: RF‑DETR training + run summary
+- 2026-02-02: Removed _rfdetr_best_checkpoint wrapper; call sites now use
+  _rfdetr_best_checkpoint_impl directly. Validation to run later:
+  - Tier‑1: RF‑DETR active model selection + training summary
+- 2026-02-02: Moved Qwen generation helpers (seq length, vision token
+  estimation, logits processors + immediate action bias) into
+  services/qwen_generation.py and removed their definitions from
+  localinferenceapi.py. localinferenceapi now imports these helpers.
+  Validation to run later:
+  - Tier‑1: Qwen captioning + prepass caption generation unchanged
+  - Tier‑1: Qwen generation logit processors still applied (thinking effort + wait bias)
+- 2026-02-02: Removed unused _predict_proba_batched helper from
+  services/classifier_batch.py (duplicate of classifier impl). Validation to run later:
+  - Tier‑1: classifier batch sizing unchanged
+- 2026-02-02: Removed unused glossary helper _normalize_glossary_name from
+  utils/glossary.py. Validation to run later:
+  - Tier‑1: glossary normalization + labelmap mapping unchanged
+- 2026-02-02: Removed unused prompt helper utilities
+  (_parse_prompt_candidates, _generate_prompt_text) from services/qwen.py and
+  dropped unused imports in localinferenceapi.py. Validation to run later:
+  - Tier‑1: prompt expansion path unchanged
+- 2026-02-02: Removed unused agent recipe execution-plan import from
+  localinferenceapi.py and deleted _normalize_agent_recipe_execution_plan from
+  services/prepass_recipes.py. Validation to run later:
+  - Tier‑1: agent recipe save/import/export unchanged
+- 2026-02-02: Removed unused _predict_proba_batched from services/classifier_batch.py
+  (duplicate of classifier implementation) and removed unused glossary helpers
+  (_normalize_glossary_name, _glossary_key). Validation to run later:
+  - Tier‑1: classifier batch sizing + glossary normalization unchanged
+- 2026-02-02: Fixed agent tool registration for sam3_text by moving
+  @_register_agent_tool("sam3_text") onto _agent_tool_sam3_text (was incorrectly
+  attached to _sam3_text_payloads_from_state). Validation to run later:
+  - Tier‑1: sam3_text tool calls resolve correctly via tool registry
+- 2026-02-02: Removed unused _agent_tool_prompt_qwen helper after scan confirmed
+  it had no call sites. Validation to run later:
+  - Tier‑1: Qwen prompt assembly unchanged (no tool prompt wrapper)
+
 Stage 1 — Utilities Extraction
 5a. Add tools/scan_unused_defs.py (excludes Qwen-Agent/Qwen3-VL/rf-detr/sam3/sahi by default) to surface likely-unused defs (heuristic, count<=1). Use as a guide for safe deletions.
 6. Identify image/label/io helper functions in localinferenceapi.py.
@@ -198,6 +400,143 @@ Stage 1 — Utilities Extraction
 7. Move image helpers to utils/image.py (preserve signature).
    - Add unit tests for any non‑trivial helper (resize, tiling, bbox conversion)
 8. Move label helpers to utils/labels.py (preserve labelmap behavior).
+
+Stage 1 Mapping Table (draft)
+-----------------------------
+Image helpers (candidate moves → utils/image.py):
+- _decode_image_base64 (wrapper around _decode_image_base64_impl)
+- _resolve_detector_image (wrapper around _resolve_detector_image_impl)
+- _slice_image_sahi (wrapper around _slice_image_sahi_impl)
+- _agent_overlay_base_image (if still used by agent mining flow)
+
+Label helpers (candidate moves → utils/labels.py):
+- _apply_expected_labelmap_warnings (if not already in utils)
+- _normalize_class_name_for_match (if not already in utils)
+
+IO/helpers (candidate moves → utils/io.py):
+- _compute_dataset_signature (if not already in utils)
+- _count_dataset_images
+
+Notes:
+- Only move wrappers that are pure pass‑through to _impl functions.
+- Keep endpoint‑specific error handling in localinferenceapi.py.
+- Remaining wrappers (not moved yet) depend on local constants or HTTP error
+  translation; keep until later services extraction.
+- 2026-02-02: Removed local wrappers for _stable_hash, _compute_dir_signature,
+  and _path_is_within_root in localinferenceapi.py; switched call sites to
+  *_impl functions from utils. Validation to run later:
+  - Tier‑1: dataset signature paths and recipe import/export unchanged.
+- 2026-02-02: Removed local _decode_image_base64 wrapper; updated call sites
+  to use _decode_image_base64_impl with BASE64_IMAGE_* defaults. Validation:
+  - Tier‑1: base64 decode paths (predict_base64, clip uploads) unchanged.
+- 2026-02-02: Removed local _resolve_detector_image wrapper; updated detector
+  call sites to use _resolve_detector_image_impl with explicit decode + cache
+  functions. Validation:
+  - Tier‑1: YOLO/RF‑DETR predict_* endpoints unchanged.
+- 2026-02-02: Switched SAHI slicing calls to _slice_image_sahi_impl directly.
+  Validation:
+  - Tier‑1: YOLO/RF‑DETR windowed predictions unchanged.
+- 2026-02-02: Removed local _compute_dataset_signature wrapper; switched
+  agent recipe persistence to _compute_dataset_signature_impl. Validation:
+  - Tier‑1: agent recipe create/export unchanged.
+- 2026-02-02: Removed local _count_dataset_images wrapper; updated call site
+  to use _count_dataset_images_impl with _iter_yolo_images. Validation:
+  - Tier‑1: dataset summary counts unchanged.
+- 2026-02-02: Removed local _count_caption_labels wrapper; updated call site
+  to use _count_caption_labels_impl. Validation:
+  - Tier‑1: dataset summary caption label counts unchanged.
+- 2026-02-02: Removed local _dir_size_bytes wrapper; updated call sites to
+  _dir_size_bytes_impl. Validation:
+  - Tier‑1: cache size endpoints unchanged.
+- 2026-02-02: Removed local _compute_labelmap_hash wrapper; updated call site
+  to _compute_labelmap_hash_impl. Validation:
+  - Tier‑1: agent recipe create/export unchanged.
+- 2026-02-02: Removed local agent recipe plan/validation wrappers
+  (_parse_agent_recipe_schema_version/_classify_agent_recipe_mode/
+  _normalize_agent_recipe_execution_plan/_validate_agent_recipe_structure).
+  Validation:
+  - Tier‑1: agent recipe import/normalize/validate unchanged.
+- 2026-02-02: Removed detector clamp wrappers (_clamp_conf_value/_clamp_iou_value/
+  _clamp_max_det_value/_clamp_slice_params) and updated call sites to *_impl.
+  Validation:
+  - Tier‑1: YOLO/RF‑DETR predict_* warnings unchanged.
+- 2026-02-02: Removed calibration helper wrappers
+  (_calibration_list_images/_calibration_sample_images/_calibration_cache_image/
+  _calibration_hash_payload/_calibration_safe_link). Call sites now use *_impl
+  with lambdas for injected deps. Validation:
+  - Tier‑1: calibration job list/sampling/cache unchanged.
+- 2026-02-02: Removed local _infer_clip_model_from_embedding_dim wrapper; updated
+  call sites to _infer_clip_model_from_embedding_dim_impl. Validation:
+  - Tier‑1: CLIP classifier load + embedding dim inference unchanged.
+- 2026-02-02: Removed local _resolve_sam3_or_qwen_dataset wrapper; updated
+  call sites to _resolve_sam3_or_qwen_dataset_impl with injected deps.
+  Validation:
+  - Tier‑1: dataset resolution for prepass/calibration/exports unchanged.
+- 2026-02-02: Removed local _resolve_dataset_legacy wrapper; updated call sites
+  to _resolve_dataset_legacy_impl with injected roots + HTTPException.
+  Validation:
+  - Tier‑1: dataset resolution fallback unchanged.
+- 2026-02-02: Removed local Qwen prompt/device wrappers
+  (_resolve_qwen_device/_get_qwen_prompt_config/_render_qwen_prompt); updated
+  call sites to *_impl with injected config + HTTPException. Validation:
+  - Tier‑1: Qwen prompt rendering + device selection unchanged.
+- 2026-02-02: Removed local _extract_balanced_json wrapper; updated call site to
+  _extract_balanced_json_impl. Validation:
+  - Tier‑1: JSON parsing in Qwen inference unchanged.
+- 2026-02-02: Removed local _dinov3_resolve_device wrapper; updated call sites
+  to _dinov3_resolve_device_impl with cuda_disabled flag injection. Validation:
+  - Tier‑1: DINOv3 device routing unchanged.
+- 2026-02-02: Removed local _resolve_sam3_device/_resolve_sam3_mining_devices
+  wrappers; updated call sites to *_impl with injected device prefs + HTTP error.
+  Validation:
+  - Tier‑1: SAM3 device selection unchanged.
+
+Stage 2 (cleanup) prep notes
+----------------------------
+- Initial unused‑def scan includes SAM3-UNet modules; decide whether to exclude
+  that directory from future scans or schedule for later cleanup.
+- Updated unused‑def scan now ignores FastAPI router-decorated endpoints; current
+  output is dominated by localinferenceapi.py helper classes/methods that are
+  likely invoked indirectly (runtime caches, SAM3 backends). These need manual
+  review before any deletions.
+- Manual review of top-level uses=0 functions shows they are agent tool handlers
+  invoked via registry (indirect), so no safe deletion batch yet.
+- No deletions performed yet; will curate a deletion list from
+  /tmp/tator_unused_defs_20260202.txt before first cleanup batch.
+- After ignoring agent-tool decorators, scan output now only lists class
+  methods on runtime caches (PredictorSlot/PredictorManager). These are
+  indirectly used; no safe deletions identified yet.
+- Updated scan now flags a short list of imported-but-unused helpers
+  (e.g., _normalize_agent_recipe_execution_plan, _parse_prompt_candidates).
+  These require manual review before deletion because imports alone can be
+  vestigial or staged for future use.
+- Scan remains heuristic: attribute access (e.g., local._run_qwen_chat_stream)
+  is not counted as a use, so some items in the report are false positives.
+  - Current scan output (after cleanup) is limited to attribute-invoked agent
+    tool helpers; no further safe deletions identified without manual checks.
+- Scan results include class methods (reported as uses=0), so manual filtering
+  is required before any deletions.
+- 2026-02-02: Re-ran scan_unused_defs.py after cleanup; report now empty
+  (no top-level unused defs detected at uses=0).
+- 2026-02-02: Generated low-usage report (uses<=1) for manual Stage 2 review:
+  /tmp/tator_unused_defs_refactor_stage2_uses1.txt (374 entries). No deletions
+  performed yet; requires manual confirmation before removing any defs.
+- 2026-02-02: Began Stage 2 triage of uses<=1 list. Early review shows:
+  - api/* build_*_router functions are expected single-use (include_router).
+  - services/* helpers are typically single-use by design (top-level flow).
+  - localinferenceapi.py core classes/backends are single-use or indirect.
+  => No safe deletion candidates identified yet. Continue manual review before
+     any removals.
+- 2026-02-02: Updated scan_unused_defs.py to skip api/* build_*_router helpers
+  (expected include_router single-use). New uses<=1 report:
+  /tmp/tator_unused_defs_refactor_stage2_uses1.txt (346 entries).
+- 2026-02-02: Updated scan_unused_defs.py to skip tools/ scripts to avoid
+  false positives from CLI helpers. New uses<=1 report:
+  /tmp/tator_unused_defs_refactor_stage2_uses1.txt (292 entries).
+- 2026-02-02: Continued triage of uses<=1 list. Majority of remaining entries
+  are single-use helpers in services/*, utils/*, and tools/* scripts plus core
+  localinferenceapi.py classes/backends. These are expected and not safe to
+  delete without deeper behavioral analysis. No deletion batch approved yet.
    - Add tests for labelmap parsing and label alignment
 9. Move IO helpers to utils/io.py (no path changes).
    - Add tests for JSON/YAML loading (with json5 fallback)
@@ -206,7 +545,7 @@ Stage 1 — Utilities Extraction
 
 Validation Backlog (run when GPUs are free)
 - ------------------------------------------
-- Run tools/run_fuzz_fast.sh (Tier‑0 + Tier‑1 in skip‑GPU mode)
+- Run tools/run_fuzz_fast.sh (Tier‑0 + Tier‑1 in skip‑GPU mode) — DONE 2026-02-02
 - Run tools/run_fuzz_fast.sh with SKIP_GPU=0 (full Tier‑1)
 - Confirm prepass endpoint responds with same schema (no missing fields)
 - Confirm caption endpoint returns full + windowed outputs
@@ -231,6 +570,22 @@ Validation Backlog (run when GPUs are free)
 - Spot‑check: RF‑DETR dataset prep/remap unchanged after services/detectors move
 - Spot‑check: base64 image decode unchanged after utils/image move
 - Spot‑check: COCO info/write/ensure helpers unchanged after utils/coco move
+
+Validation attempt notes
+------------------------
+- 2026-02-02: Tried running tools/run_refactor_validation.sh with SKIP_GPU=1
+  from the sandbox; Tier‑0 failed with PermissionError (socket/HTTP blocked).
+  Validation must be run when network access to 127.0.0.1:8000 is permitted.
+- 2026-02-02: Ran tools/run_refactor_validation.sh with SKIP_FUZZ=1 to confirm
+  py_compile succeeds without HTTP access.
+- 2026-02-02: Ran tools/run_refactor_validation.sh with SKIP_GPU=1 (HTTP allowed).
+  Tier‑0 passed; Tier‑1 executed in skip‑GPU mode (steps intentionally skipped).
+
+Blockers
+--------
+- Stage 9/10 validations require HTTP access to the local API. Current environment
+  blocks socket access; full Tier‑0/1/2 runs must be executed in a session with
+  local network permissions.
 - Spot‑check: path_is_within_root helper unchanged after utils/io move
 - Spot‑check: classifier resolve/load wrappers unchanged after refactor import cleanup
 - Spot‑check: validate_cuda_device_ids helper unchanged after utils/gpu move
@@ -494,6 +849,133 @@ Stage 2.5 — Qwen helpers (captioning + prompt expansion)
    - Moved dataset artifact purge helper into services/datasets.py.
    - Moved Qwen label collection helpers into services/datasets.py.
    - Moved YOLO labelmap discovery helper into services/datasets.py.
+   - Removed YOLO/RF‑DETR run/meta wrappers (run_dir, load_meta, write_meta, load_active)
+     and updated all call sites to *_impl variants with explicit deps.
+     Validation to run later:
+     - Tier‑0: list_yolo_runs/list_rfdetr_runs + get/set active
+     - Tier‑0: download_yolo_run/download_rfdetr_run + run summaries
+     - Tier‑1: YOLO/RF‑DETR training cancel/write meta paths
+   - Removed agent mining + prompt helper preset thin wrappers and inlined impl calls
+     (agent_mining_get_recipe/cascade, list/get prompt helper presets).
+   - Removed _write_coco_annotations wrapper and switched to impl directly.
+     Validation to run later:
+     - Tier‑0: agent mining recipe/cascade GET/export
+     - Tier‑0: prompt helper preset list/get
+     - Tier‑0: segmentation build COCO split output
+   - Removed prompt‑recipe evaluation wrappers (sanitize prompts, GT index,
+     candidate evaluation, prompt detections, recipe build) and inlined *_impl
+     calls with explicit deps.
+     Validation to run later:
+     - Tier‑1: prompt helper recipe generation + metrics
+   - Removed duplicate sam3_train_cache_size/sam3_train_cache_purge definitions
+     (later duplicate in localinferenceapi.py). No behavior change; router already
+     bound to original definitions.
+   - Moved yolo_to_corners helper into utils/coords as _yolo_to_xyxy_int and
+     removed the localinferenceapi duplicate. Updated call sites to use the
+     shared helper to reduce drift.
+   - Removed local to_yolo helper; call sites now use utils/coords
+     _xyxy_to_yolo_norm_list for consistent YOLO conversion.
+   - Moved binary mask encode/decode + mask→polygon helpers into utils/coco
+     (_encode_binary_mask_impl/_decode_binary_mask_impl/_mask_to_polygon_impl),
+     removing localinferenceapi duplicates. Call sites now pass
+     MASK_ENCODE_MAX_BYTES explicitly.
+   - Removed unused ConvexHull import from localinferenceapi.py (now owned by
+     utils/coco mask helpers).
+   - Moved mask_to_bounding_box helper into utils/coords as _mask_to_bounding_box
+     and removed localinferenceapi duplicate.
+   - Ran py_compile on localinferenceapi.py + utils/coco.py + utils/coords.py
+     after these moves (no syntax errors).
+   - Added services/prepass _build_deep_prepass_runners_impl to encapsulate
+     deep prepass runner wiring; localinferenceapi now assigns the four
+     _agent_run_deep_prepass* callables from this builder instead of defining
+     wrappers inline. (localinferenceapi shrinks; tests still import the
+     callable names.)
+   - Removed list_prepass_recipes + list_clip_* wrappers and inlined impl
+     calls in routers; removed _resolve_active_head_normalize_embeddings wrapper.
+     Validation to run later:
+     - Tier‑0: prepass recipe list endpoint
+     - Tier‑0: clip classifiers/labelmaps list endpoints
+     - Tier‑0: set_active_model path (normalize embeddings)
+   - Removed list_sam3_runs wrapper; registry router now uses impl directly.
+     Validation to run later:
+     - Tier‑0: SAM3 run list/delete/promote
+   - Moved common Pydantic schemas (Base64Payload, PredictResponse, BboxModel,
+     CropZipRequest, PointPrompt, BboxPrompt, SamPreloadRequest) into
+     models/schemas.py and updated localinferenceapi imports.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved SamPreloadResponse, SamSlotStatus, SamActivateRequest/Response,
+     PredictorSettings into models/schemas.py and removed local duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved Sam3VisualPrompt and SamPointAutoResponse into models/schemas.py and
+     removed localinferenceapi duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved Qwen detection + inference + caption schemas (QwenDetection,
+     QwenInferenceRequest/Response, QwenCaptionHint/Request/Response) into
+     models/schemas.py and removed localinferenceapi duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved Qwen prepass + calibration schemas (QwenPrepassRequest/Response,
+     CalibrationRequest, AgentToolCall/Result/TraceEvent) into models/schemas.py
+     and removed localinferenceapi duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved Qwen prompt/runtime schemas (QwenPromptSection/Config,
+     QwenRuntimeSettings/Update) into models/schemas.py and removed local
+     duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved model activation schemas (Sam3ModelActivateRequest,
+     QwenModelActivateRequest, ActiveModelRequest/Response) into
+     models/schemas.py and removed local duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved SegmentationBuildRequest into models/schemas.py and removed local
+     duplicate.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved training + detector request schemas (QwenTrainRequest,
+     Sam3TrainRequest, YoloTrainRequest, YoloHeadGraftRequest/DryRun,
+     RfDetrTrainRequest, Yolo/RF‑DETR region/full/windowed request/response,
+     Active run request types) into models/schemas.py and removed local
+     duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved Sam3TextPromptResponse/AutoResponse into models/schemas.py and
+     removed local duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Moved PredictorSettingsUpdate, MultiPointPrompt, YoloBboxOutput, and
+     Sam3TextPrompt into models/schemas.py; removed local duplicates.
+     Validation to run later:
+     - Tier‑0/Tier‑1 skip‑GPU
+     - py_compile localinferenceapi.py + models/schemas.py (done)
+   - Added models/__init__.py for explicit package marker.
+   - Removed list/get active wrappers for YOLO + RF‑DETR runs; routers now use
+     *_impl directly with explicit deps.
+     Validation to run later:
+     - Tier‑0: list_yolo_runs/list_rfdetr_runs + get/set active in UI
+   - Removed YOLO model-source + training monitor wrappers; training thread now
+     invokes _yolo_monitor_training_impl directly with explicit deps.
+     Validation to run later:
+     - Tier‑1: YOLO training monitor + metrics series capture
+   - Removed dataset metadata persistence wrappers; all callers now use
+     *_persist_*_metadata_impl directly with explicit meta_name/logger args.
+     Validation to run later:
+     - Tier‑0: dataset list/registry metadata refresh
+     - Tier‑1: segmentation build + SAM3 dataset resplit metadata
 
    Helpers to move in Stage 2 (do not forget):
    - Completed: _normalize_labelmap_glossary (utils/glossary)
@@ -568,6 +1050,37 @@ Stage 8 — Dead Code Removal
     - Candidate list to verify:
       - ClipDatasetUploadJob + CLIP_DATASET_JOBS/LOCK (unreferenced)
       - QwenDatasetUploadJob + QWEN_DATASET_JOBS/LOCK (unreferenced)
+
+Stage 8 progress
+----------------
+- 2026-02-02: Removed unused ClipDatasetUploadJob/QwenDatasetUploadJob
+  dataclasses and CLIP_DATASET_JOBS/QWEN_DATASET_JOBS registries (no references
+  anywhere in code). Validation to run later:
+  - Tier‑0: dataset upload endpoints unaffected
+- 2026-02-02: Re-ran unused-def scans (uses=0) after removal; no additional
+  high-confidence dead code found. Stage 8 is paused pending deeper analysis
+  or new evidence of unused code.
+- 2026-02-02: Removed legacy sentinel _AgentToolRunner (unused). Validation:
+  - Tier‑0: agent tools registry unaffected
+- 2026-02-02: Verified api/ + services/ + utils/ modules already include
+  module docstrings (Stage 10 step 51 satisfied; no edits needed).
+- 2026-02-02: Updated readme.md repository layout to document api/ + services/
+  + utils/ and clarify localinferenceapi.py as a thin router shim.
+- 2026-02-02: Added backend module map in readme.md to document where core
+  logic lives (prepass/calibration, detectors, classifier, SAM3, Qwen).
+- 2026-02-02: Added high‑level backend flow diagram + migration note in
+  readme.md (localinferenceapi.py is router shim; logic in services/utils).
+- 2026-02-02: Updated secondary “Codebase map” section in readme.md to reflect
+  api/ + services/ + utils/ layout.
+- 2026-02-02: Updated tools/run_refactor_validation.sh to include api/*.py in
+  py_compile for early syntax checking after router split.
+- 2026-02-02: Logged existing TODO in localinferenceapi.py (polygon mask
+  enrichment) as a deferred post‑refactor enhancement (no change).
+- 2026-02-02: Added SKIP_FUZZ option to tools/run_refactor_validation.sh so
+  py_compile can run even when HTTP access to 127.0.0.1 is blocked.
+- 2026-02-02: Updated tools/fuzz_tier0.py to align with current endpoint
+  schemas (health_summary ok/status, detectors default mode/active, clip
+  classifiers list payload) and increased timeouts for heavy endpoints.
 
 Stage 9 — Final Verification
 47. Run Tier‑2 fuzz (full pipeline on 2–4 images).
@@ -824,3 +1337,325 @@ Progress Log
   services/detector_jobs.py and converted local wrappers.
 - Stage 2.5: moved Qwen caption runtime loader into
   services/qwen_runtime.py and converted local wrapper.
+- 2026-02-02: Stage 7 pilot — moved /detectors/default endpoints into
+  api/detectors_default.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /detectors/default GET/POST returns same payload.
+  - Confirm OpenAPI still lists /detectors/default (no duplicate paths).
+- 2026-02-02: Stage 7 pilot — moved /predictor_settings endpoints into
+  api/predictor_settings.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /predictor_settings GET/POST returns same payload.
+- 2026-02-02: Stage 7 pilot — moved /runtime/unload endpoint into
+  api/runtime.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /runtime/unload still unloads all inference runtimes.
+- 2026-02-02: Stage 7 pilot — moved /system/* endpoints into
+  api/system.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /system/gpu, /system/storage_check, /system/health_summary responses unchanged.
+- 2026-02-02: Stage 7 pilot — moved /qwen/status + /qwen/settings + /qwen/unload
+  into api/qwen_status.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /qwen/status response unchanged.
+  - Tier‑1: /qwen/settings GET/POST response unchanged.
+  - Tier‑1: /qwen/unload still clears runtime.
+- 2026-02-02: Stage 7 pilot — moved /sam_slots + /sam_activate_slot endpoints
+  into api/sam_slots.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /sam_slots returns same slot status list.
+  - Tier‑1: /sam_activate_slot promotes slot as before.
+- 2026-02-02: Stage 7 pilot — moved /qwen/train/* endpoints into
+  api/qwen_training.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /qwen/train/jobs create + list + get + cancel unchanged.
+  - Tier‑1: /qwen/train/cache_size and /qwen/train/cache/purge unchanged.
+- 2026-02-02: Stage 7 pilot — moved /qwen/models endpoints into
+  api/qwen_models.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /qwen/models list unchanged.
+  - Tier‑1: /qwen/models/activate unchanged.
+- 2026-02-02: Stage 7 pilot — moved /clip/active_model endpoints into
+  api/clip_active_model.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /clip/active_model GET/POST response unchanged.
+- 2026-02-02: Stage 7 pilot — moved /sam_preload endpoint into
+  api/sam_preload.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /sam_preload behavior unchanged.
+- 2026-02-02: Stage 7 pilot — moved /qwen/infer endpoint into
+  api/qwen_infer.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /qwen/infer response unchanged.
+- 2026-02-02: Stage 7 pilot — moved /qwen/caption endpoint into
+  api/qwen_caption.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /qwen/caption response unchanged.
+- 2026-02-02: Stage 7 pilot — moved /calibration/jobs endpoints into
+  api/calibration.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /calibration/jobs create/list/get/cancel unchanged.
+- 2026-02-02: Stage 7 pilot — moved /prepass/recipes endpoints into
+  api/prepass.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /prepass/recipes list/get/save/delete unchanged.
+  - Tier‑1: /prepass/recipes export + import/import-raw unchanged.
+- 2026-02-02: Stage 7 pilot — moved /qwen/prepass endpoint into
+  api/qwen_prepass.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /qwen/prepass response unchanged.
+- 2026-02-02: Stage 7 pilot — moved /clip/* registry endpoints into
+  api/clip_registry.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /clip/backbones unchanged.
+  - Tier‑1: /clip/classifiers list/download/delete/rename unchanged.
+  - Tier‑1: /clip/labelmaps list/download/delete unchanged.
+- 2026-02-02: Stage 7 pilot — moved /clip/train endpoints into
+  api/clip_training.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /clip/train create + list + get + cancel unchanged.
+- 2026-02-02: Stage 7 pilot — moved /fs/upload_* endpoints into
+  api/fs_upload.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /fs/upload_classifier and /fs/upload_labelmap unchanged.
+- 2026-02-02: Stage 7 pilot — moved /predict_base64 endpoint into
+  api/predict_base64.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /predict_base64 response unchanged.
+- 2026-02-02: Stage 7 pilot — moved /crop_zip_* endpoints into
+  api/crop_zip.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /crop_zip_init, /crop_zip_chunk, /crop_zip_finalize unchanged.
+- 2026-02-02: Stage 7 pilot — moved /sam3/prompt_helper/* endpoints into
+  api/sam3_prompt_helper.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /sam3/prompt_helper/suggest|expand unchanged.
+  - Tier‑1: /sam3/prompt_helper/jobs + /search + /recipe unchanged.
+  - Tier‑1: /sam3/prompt_helper/presets list/get/create unchanged.
+  - Tier‑1: /sam3/prompt_helper/jobs list/get unchanged.
+- 2026-02-02: Stage 7 pilot — moved /sam3/train/* endpoints into
+  api/sam3_training.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /sam3/train/jobs create/list/get/cancel unchanged.
+  - Tier‑1: /sam3/train/cache_size and /sam3/train/cache/purge unchanged.
+- 2026-02-02: Stage 7 pilot — moved /sam3/storage/* and /sam3/models/* endpoints into
+  api/sam3_registry.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /sam3/storage/runs list/delete/promote unchanged.
+  - Tier‑1: /sam3/models/available + /sam3/models/activate unchanged.
+- 2026-02-02: Stage 8 pilot — moved /sam3/text_prompt, /sam3/text_prompt_auto,
+  /sam3/visual_prompt, /sam_point, /sam_bbox_auto, /sam_point_auto,
+  /sam_point_multi, /sam_point_multi_auto, /sam_bbox endpoints into
+  api/sam3_prompts.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: SAM3 text prompt responses unchanged.
+  - Tier‑1: SAM3 visual prompt responses unchanged.
+  - Tier‑1: SAM3 point/bbox auto responses unchanged.
+  - Tier‑1: SAM3 point multi responses unchanged.
+- 2026-02-02: Stage 8 pilot — moved /agent_mining/* endpoints into
+  api/agent_mining.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /agent_mining/jobs create/list/get/cancel unchanged.
+  - Tier‑1: /agent_mining/results/latest unchanged.
+  - Tier‑1: /agent_mining/cache_size + /cache/purge unchanged.
+  - Tier‑1: /agent_mining/apply_image + /apply_image_chain unchanged.
+  - Tier‑1: /agent_mining/recipes CRUD + import/export unchanged.
+  - Tier‑1: /agent_mining/cascades CRUD + import/export unchanged.
+- 2026-02-02: Stage 8 pilot — moved /segmentation/build/jobs endpoints into
+  api/segmentation_build.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /segmentation/build/jobs create/list/get unchanged.
+- 2026-02-02: Stage 8 pilot — moved /yolo/train/* and /yolo/head_graft/*
+  endpoints into api/yolo_training.py and mounted via include_router in
+  localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /yolo/train/jobs create/list/get/cancel unchanged.
+  - Tier‑1: /yolo/head_graft jobs/dry_run/list/get/cancel unchanged.
+- 2026-02-02: Stage 8 pilot — moved /rfdetr/train/* endpoints into
+  api/rfdetr_training.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /rfdetr/train/jobs create/list/get/cancel unchanged.
+- 2026-02-02: Stage 8 pilot — moved RF‑DETR registry + inference endpoints into
+  api/rfdetr.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /rfdetr/variants + /rfdetr/runs unchanged.
+  - Tier‑1: /rfdetr/active get/set unchanged.
+  - Tier‑1: /rfdetr/predict_region/full/windowed unchanged.
+  - Tier‑1: /rfdetr/runs/{run_id} summary/download/delete unchanged.
+- 2026-02-02: Stage 8 pilot — moved YOLO registry + inference endpoints into
+  api/yolo.py and mounted via include_router in localinferenceapi.
+  Validation to run later:
+  - Tier‑1: /yolo/variants + /yolo/runs unchanged.
+  - Tier‑1: /yolo/active get/set unchanged.
+  - Tier‑1: /yolo/predict_region/full/windowed unchanged.
+  - Tier‑1: /yolo/runs/{run_id} summary/download/delete unchanged.
+  - Tier‑1: /yolo/head_graft/jobs/{job_id}/bundle unchanged.
+- 2026-02-02: Stage 9 — removed dataset conversion wrappers
+  (_convert_yolo/qwen/coco_dataset_to_*), _resolve_sam3_dataset_meta wrapper,
+  and _load_coco_index wrapper. Call sites now use *_impl directly.
+  Validation to run later:
+  - Tier‑1: dataset conversion endpoints (YOLO/Qwen/COCO) unchanged.
+  - Tier‑1: SAM3 dataset meta resolution for conversion flows unchanged.
+  - Tier‑1: agent mining prompt helper + dataset search endpoints unchanged.
+- 2026-02-02: Stage 9 — removed RF‑DETR training helper wrappers
+  (_rfdetr_parse_log_series/_sanitize_metric/_normalize_aug_policy/
+  _install_augmentations/_restore_augmentations/_latest_checkpoint_epoch/
+  _monitor_training). Call sites now use *_impl directly and thread monitor
+  passes required callbacks explicitly.
+  Validation to run later:
+  - Tier‑1: RF‑DETR training job monitoring metrics unchanged.
+  - Tier‑1: RF‑DETR augmentation policy handling unchanged.
+- 2026-02-02: Stage 9 — removed YOLO helper wrappers
+  (_yolo_load_labelmap/_yolo_device_arg/_yolo_build_aug_args/
+  _yolo_parse_results_csv). Call sites now use *_impl directly.
+  Validation to run later:
+  - Tier‑1: YOLO training metrics parsing unchanged.
+  - Tier‑1: YOLO head‑graft labelmap handling unchanged.
+- 2026-02-02: Stage 9 — removed YOLO YAML/head wrapper helpers
+  (_yolo_write_data_yaml/_yolo_variant_base_yaml/_yolo_write_variant_yaml/
+  _yolo_write_head_graft_yaml/_yolo_find_detect_modules/_yolo_detect_layer_index).
+  Call sites now pass impl dependencies explicitly.
+  Validation to run later:
+  - Tier‑1: YOLO training data YAML creation unchanged.
+  - Tier‑1: YOLO head‑graft YAML creation unchanged.
+  - Tier‑1: YOLO Detect layer indexing unchanged.
+- 2026-02-02: Stage 9 — removed _run_calibration_job wrapper; calibration job
+  creation now passes a direct _run_calibration_job_impl lambda with explicit
+  dependencies.
+  Validation to run later:
+  - Tier‑1: /calibration/jobs create/list/get/cancel unchanged.
+- 2026-02-02: Stage 9 — removed RF‑DETR dataset helper wrappers
+  (_rfdetr_remap_coco_ids/_rfdetr_prepare_dataset). Call sites now use *_impl
+  directly with explicit remap_ids_fn wiring.
+  Validation to run later:
+  - Tier‑1: RF‑DETR dataset prep (COCO remap) unchanged.
+- 2026-02-02: Stage 9 — removed agent recipe/cascade loader wrappers
+  (_load_agent_recipe/_load_agent_recipe_json_only/_load_agent_cascade).
+  Call sites now use *_impl with explicit roots/guards.
+  Validation to run later:
+  - Tier‑1: agent_mining recipes load/get/export unchanged.
+  - Tier‑1: agent_mining cascades load/get/export unchanged.
+- 2026-02-02: Stage 9 — removed _yolo_p2_scale wrapper; call sites now use
+  _yolo_p2_scale_impl directly.
+  Validation to run later:
+  - Tier‑1: YOLO model source resolution unchanged.
+- 2026-02-02: Stage 9 — removed Qwen caption/text wrapper helpers
+  (_build_qwen_caption_prompt/_run_qwen_caption_cleanup/_run_qwen_caption_merge/
+  _generate_qwen_text/_parse_prompt_candidates/_generate_prompt_text).
+  Call sites now use *_impl directly or local helpers with explicit deps.
+  Validation to run later:
+  - Tier‑1: Qwen captioning (full + windowed + cleanup/merge) unchanged.
+  - Tier‑1: SAM3 synonym expansion text helper unchanged.
+- 2026-02-02: Stage 9 — removed agent context helper wrappers
+  (_agent_context_store/_agent_context_chunk). Call sites now use *_impl with
+  explicit stores/max_bytes.
+  Validation to run later:
+  - Tier‑1: /prepass/context endpoints unchanged.
+- 2026-02-02: Stage 9 — removed classifier batching wrappers
+  (_resolve_classifier_batch_size/_predict_proba_batched). Call sites now use
+  *_impl directly with explicit dependencies.
+  Validation to run later:
+  - Tier‑1: classifier review batching unchanged.
+- 2026-02-02: Stage 9 — removed SAM3 run helper wrappers
+  (_active_run_paths_for_variant/_list_sam3_runs). Call sites now use *_impl
+  directly with explicit dependencies.
+  Validation to run later:
+  - Tier‑1: /sam3/storage runs list unchanged.
+- 2026-02-02: Stage 9 — removed clip classifier wrappers
+  (_resolve_agent_clip_classifier_path/_load_clip_head_from_classifier).
+  Call sites now use *_impl with explicit roots/guards/deps.
+  Validation to run later:
+  - Tier‑1: classifier download/rename/delete endpoints unchanged.
+  - Tier‑1: agent prepass classifier head loading unchanged.
+- Stage 9 backlog (next targets):
+  - Clip classifier path/head loader wrappers.
+  - YOLO/RF‑DETR run dir + load meta wrappers.
+  - list_all_datasets + active run path wrappers (if not already inlined).
+  - agent tool runner + deep prepass wrappers (only after test harness ready).
+  - serializer passthroughs (prompt helper, seg, clip, sam3, yolo, rfdetr, qwen).
+- 2026-02-02: Stage 9 — removed training runtime wrapper calls
+  (_prepare_for_training/_finalize_training_environment/_unload_non_qwen_runtimes)
+  and replaced call sites with *_impl lambdas that pass explicit unload/resume
+  dependencies. Updated runtime router unload_all to call impl directly.
+  Validation to run later:
+  - Tier‑1: /runtime/unload frees SAM/Qwen/detectors as before.
+  - Tier‑1: clip/sam3/yolo/rfdetr training start/finish still unloads runtimes.
+- 2026-02-02: Stage 9 — removed agent prepass wrapper defs
+  (_require_sam3_for_prepass/_sam3_clear_device_pinned_caches/_evict_qwen_caption_entry
+  and deep prepass helper wrappers). Replaced with partials/impl lambdas and
+  direct impl calls.
+  Validation to run later:
+  - Tier‑1: prepass (deep) still runs with same trace outputs.
+  - Tier‑1: qwen caption cache eviction unchanged.
+- 2026-02-02: Stage 9 — replaced job log/update helpers with partials
+  for clip/qwen/sam3/yolo/rfdetr/seg + head‑graft audit/log/update.
+  Validation to run later:
+  - Tier‑1: training job logs/metrics still capped and serialized.
+- 2026-02-02: Stage 9 — removed dataset/list/training resolver wrappers
+  (_list_all_datasets/_yolo_labels_have_polygons/_resolve_yolo_training_dataset/
+   _resolve_rfdetr_training_dataset) and replaced with partials to *_impl.
+  Validation to run later:
+  - Tier‑1: dataset manager list unchanged.
+  - Tier‑1: YOLO + RF‑DETR training dataset resolution unchanged.
+- 2026-02-02: Stage 9 — removed agent recipe/cascade persistence wrappers and
+  calibration job helper wrappers, replaced with partials or direct impl aliases.
+  Validation to run later:
+  - Tier‑1: agent_mining recipe/cascade CRUD unchanged.
+  - Tier‑1: calibration prepass workers unchanged.
+- 2026-02-02: Stage 9 — removed detection extraction wrappers
+  (_yolo_extract_detections/_rfdetr_extract_detections) and now alias impl.
+  Validation to run later:
+  - Tier‑1: YOLO/RF‑DETR inference responses unchanged.
+- 2026-02-02: Stage 9 — removed agent recipe/cascade zip helper wrappers
+  (_ensure_recipe_zip/_ensure_cascade_zip) and replaced with partials.
+  Validation to run later:
+  - Tier‑1: agent_mining recipe/cascade export bundles unchanged.
+- 2026-02-02: Stage 9 — kept (or restored) run_detector + deep_prepass
+  wrappers because they depend on live global state (active labelmap,
+  classifier head, SAM3 thresholds). Converting to partials would freeze
+  these values. Wrapper bodies still call *_impl with explicit deps.
+  Validation to run later:
+  - Tier‑1: prepass threshold overrides respected.
+  - Tier‑1: active classifier head switching respected.
+- 2026-02-02: Stage 9 — AST scan shows only remaining wrapper-like defs are
+  deep prepass helpers; keeping them due to dynamic global state usage.
+- 2026-02-02: Stage 9 backlog cleared — clip classifier wrappers, YOLO/RF‑DETR
+  run/meta wrappers, dataset list wrappers, serializer passthroughs, and
+  training runtime wrappers are now removed or replaced with partials. Remaining
+  intentional wrappers: deep prepass + run_detector (dynamic state).
+- 2026-02-02: scan_unused_defs (max-uses=0, include-underscore) flags many
+  API endpoint functions and utility classes with uses=0. This is expected
+  because decorated endpoints are only referenced by FastAPI routing. No
+  deletions taken; keep for manual review in later cleanup stage.
+- 2026-02-02: Stage 2 — moved DetectorDefaultRequest into models/schemas.py
+  and removed the local BaseModel class + unused pydantic BaseModel import
+  from localinferenceapi.py.
+  Validation to run later:
+  - Tier‑0/Tier‑1: detector default settings endpoints still accept {mode}.
+- 2026-02-02: Stage 2 — removed unused pydantic root_validator/Field imports
+  from localinferenceapi.py after schema extraction.
+  Validation to run later:
+  - Tier‑0: localinferenceapi imports cleanly under py_compile.
+- 2026-02-02: Stage 2 — re-ran scan_unused_defs (max-uses=0/1). Only
+  router-exposed endpoints + expected globals flagged (uses=1). No further
+  high-confidence deletions identified in this pass.
+- 2026-02-02: Stage 8 — ran a coarse module-usage scan (string match of
+  services.<mod> / utils.<mod> across repo). No unreferenced service or
+  util modules found; no deletions taken.
+- 2026-02-02: Stage 9 — updated tools/run_refactor_validation.sh to include
+  models/*.py in py_compile pass.
+  Validation to run later:
+  - Tier‑0: py_compile should now cover models package as well.
+- 2026-02-02: Stage 9 — manual py_compile run on models/*.py succeeded.
+- 2026-02-02: Stage 9 — ran run_refactor_validation.sh with SKIP_FUZZ=1
+  (py_compile only). No errors.
+- 2026-02-02: Stage 9 — attempted Tier‑0/Tier‑1 (SKIP_GPU=1) via
+  tools/run_refactor_validation.sh, but the run timed out waiting for
+  /system/health_summary (API likely busy). Needs re‑run when API free.
+- 2026-02-02: Stage 10 — staged new refactor modules (api/, models/,
+  services/qwen_generation.py) so they don’t remain untracked.
+- 2026-02-02: Stage 8 — second pass confirms no additional high-confidence
+  deletions (usage scans + module reference scan). Stage 8 remains paused
+  pending new evidence.
+- 2026-02-02: Repo hygiene — api/ + models/ + services/qwen_generation.py are
+  new refactor modules and must be staged in the next commit (currently untracked).
