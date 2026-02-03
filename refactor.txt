@@ -149,15 +149,13 @@ Status Snapshot (2026-02-02)
 - Stage 3–7 (services + router split): complete in code; Tier‑0/Tier‑1 (skip‑GPU) validation done; full GPU validation pending.
 - Stage 8 (dead code removal): paused (2 batches removed; no further high‑confidence
   deletions after scan). Awaiting deeper analysis or new evidence.
-- Stage 9 (validation + docs): docs updates complete; Tier‑0 + Tier‑1 skip‑GPU run; full GPU fuzz pending (GPU busy).
-- Stage 10 (cleanup + docs): docstrings + docs updates complete; Tier‑2 fuzz + 10‑image bench pending.
+- Stage 9 (validation + docs): docs updates complete; Tier‑0 + Tier‑1 skip‑GPU + Tier‑1 full GPU run complete.
+- Stage 10 (cleanup + docs): docstrings + docs updates complete; Tier‑2 fuzz + 10‑image bench completed; caption sanity pending (503).
 
-Validation Backlog (GPU busy)
------------------------------
-- Tier‑1 full (GPU) fuzz run
-- Tier‑2 fuzz run
-- 10‑image benchmark (prepass + calibration quick smoke)
-- Qwen caption windowed/full sanity checks (real model)
+Validation Backlog (follow‑up)
+-------------------------------
+- Qwen caption windowed/full sanity checks (real model) — 503 in last attempt.
+- Investigate YOLO baseline 500s from 10‑image benchmark run (may require detector config/labelmap alignment or server state).
 
 
 Atomic Task List (Executable Roadmap)
@@ -544,9 +542,9 @@ Stage 2 (cleanup) prep notes
 11. Run Tier‑0 + Tier‑1 fuzz (check no change in output schema).
 
 Validation Backlog (run when GPUs are free)
-- ------------------------------------------
+-------------------------------------------
 - Run tools/run_fuzz_fast.sh (Tier‑0 + Tier‑1 in skip‑GPU mode) — DONE 2026-02-02
-- Run tools/run_fuzz_fast.sh with SKIP_GPU=0 (full Tier‑1)
+- Run tools/run_fuzz_fast.sh with SKIP_GPU=0 (full Tier‑1) — DONE 2026-02-02 (labelmap mismatch warnings expected in fuzz_pack)
 - Confirm prepass endpoint responds with same schema (no missing fields)
 - Confirm caption endpoint returns full + windowed outputs
 - Spot‑check: cluster label counts + overlay summaries unchanged after helper extraction
@@ -580,12 +578,18 @@ Validation attempt notes
   py_compile succeeds without HTTP access.
 - 2026-02-02: Ran tools/run_refactor_validation.sh with SKIP_GPU=1 (HTTP allowed).
   Tier‑0 passed; Tier‑1 executed in skip‑GPU mode (steps intentionally skipped).
+- 2026-02-02: Ran tools/run_refactor_validation.sh with SKIP_GPU=0.
+  Tier‑0 passed; Tier‑1 ran full GPU steps with expected detector labelmap
+  mismatch warnings in fuzz_pack. Calibration job started (async).
+- 2026-02-02: Ran tools/run_qwen_prepass_smoke.sh (4 images) and
+  tools/run_qwen_prepass_benchmark.sh (10 images). YOLO baseline returned 500s.
+- 2026-02-02: Caption sanity check via /qwen/caption returned HTTP 503 after
+  retries; needs re‑run when Qwen is available.
 
 Blockers
 --------
-- Stage 9/10 validations require HTTP access to the local API. Current environment
-  blocks socket access; full Tier‑0/1/2 runs must be executed in a session with
-  local network permissions.
+- Qwen caption sanity check blocked by 503 (service unavailable).
+- YOLO baseline 500s during 10‑image benchmark need investigation.
 - Spot‑check: path_is_within_root helper unchanged after utils/io move
 - Spot‑check: classifier resolve/load wrappers unchanged after refactor import cleanup
 - Spot‑check: validate_cuda_device_ids helper unchanged after utils/gpu move
@@ -1652,6 +1656,22 @@ Progress Log
 - 2026-02-02: Stage 9 — re-ran Tier‑0/Tier‑1 (SKIP_GPU=1) via
   tools/run_refactor_validation.sh. Tier‑0 passed. Tier‑1 skip‑GPU
   succeeded with GPU-dependent steps skipped. Logs in /tmp/tator_fuzz.
+- 2026-02-02: Stage 9 — Tier‑0/Tier‑1 full GPU run (SKIP_GPU=0) completed.
+  Tier‑1 prepass steps returned labelmap‑mismatch warnings for YOLO/RF‑DETR
+  (expected in fuzz_pack). Calibration job started (cal_0c0204ce) and
+  returned async job metadata. Logs in /tmp/tator_fuzz.
+- 2026-02-02: Stage 9 — fixed tools/fuzz_tier1.py classifier lookup to accept
+  list or {classifiers:[...]} payloads.
+- 2026-02-02: Stage 10 — Tier‑2 prepass smoke (4 images) completed via
+  tools/run_qwen_prepass_smoke.sh; output /tmp/qwen_prepass_smoke_4.jsonl.
+- 2026-02-02: Stage 10 — 10‑image prepass benchmark completed via
+  tools/run_qwen_prepass_benchmark.sh (prepass‑only). Output:
+  /tmp/qwen_prepass_benchmark_10.jsonl; summary in
+  /tmp/qwen_prepass_benchmark_10.summary.json. YOLO baseline returned 500s
+  during this run (needs follow‑up when API idle).
+- 2026-02-02: Stage 10 — Qwen caption sanity check attempted; /qwen/caption
+  returned HTTP 503 after retries. Logged to /tmp/qwen_caption_sanity.json;
+  needs re‑run when Qwen is available.
 - 2026-02-02: Stage 10 — staged new refactor modules (api/, models/,
   services/qwen_generation.py) so they don’t remain untracked.
 - 2026-02-02: Stage 8 — second pass confirms no additional high-confidence
