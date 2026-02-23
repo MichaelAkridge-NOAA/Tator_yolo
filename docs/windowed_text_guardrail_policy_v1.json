@@ -1,0 +1,18 @@
+{
+  "logit_bias_by_source_class": {
+    "sam3_text": {
+      "*": -0.45,
+      "person": -0.60,
+      "utility_pole": -0.50
+    }
+  },
+  "sam_only_min_prob_default": 0.68,
+  "sam_only_min_prob_by_class": {
+    "person": 0.76,
+    "light_vehicle": 0.74,
+    "truck": 0.74,
+    "bus": 0.76,
+    "utility_pole": 0.68,
+    "building": 0.52
+  }
+}

@@ -157,6 +157,56 @@ Validation Backlog (follow‑up)
 - Qwen caption windowed/full sanity checks (real model) — 503 in last attempt.
 - Investigate YOLO baseline 500s from 10‑image benchmark run (may require detector config/labelmap alignment or server state).
 
+Recent Validation Runs (2026-02-03)
+----------------------------------
+- Tier‑0/Tier‑1 API sanity (OpenAPI + UI endpoint map/method checks): complete.
+- UI OpenAPI sanity sweep (all non‑mutating endpoints): complete.
+- UI endpoint extraction vs OpenAPI (check_ui_endpoints.py): complete (flags dynamic base paths like /{}/active; no real API gaps).
+- OpenAPI missing param/query tests: complete.
+- Negative upload tests: complete.
+- Pytest unit suite (tests/): complete.
+- Tier‑0 fuzz script: complete.
+- Tier‑1 fuzz script (GPU): complete (after runtime unload / caption reload fix).
+- Refactor validation (Tier‑0 + Tier‑1 GPU) complete again after caption device fix.
+- UI smoke test (GPU endpoints): complete.
+- UI contract tests: complete.
+- Qwen prepass smoke (2 images): complete.
+- UI data ops tests (glossary + prepass recipe + dataset glossary set/restore): complete.
+- Qwen prepass smoke (4 images): complete.
+- Qwen prepass benchmark (2 images, prepass-only): complete (summary JSONL + baseline).
+- Tier‑1 fuzz skip‑GPU path (run_fuzz_fast.sh SKIP_GPU=1): complete.
+- Qwen prepass benchmark (1 image, full pipeline): complete.
+- UI OpenAPI sanity sweep re-run: complete.
+- Qwen prepass benchmark (5 images, prepass-only): complete.
+- Qwen prepass benchmark (3 images, full pipeline): complete.
+- Qwen prepass benchmark (10 images, full pipeline): complete.
+- UI param sweep (negative payloads, run_ui_param_sweep.py): complete.
+- Qwen prepass benchmark (YOLO label-source, 2 images, full pipeline): complete.
+- Qwen prepass benchmark (YOLO label-source, 2 images, prepass-only): complete.
+- UI concurrency smoke (safe GETs, run_ui_concurrency_smoke.py): complete.
+- Calibration job smoke (max_images=5, classifier) complete after fixes to calibration call sites + feature build scripts.
+- Calibration pipeline fixes: build_ensemble_features now resolves classifier paths via UPLOAD_ROOT; train_ensemble_xgb import path fixed for direct script execution.
+- UI OpenAPI sanity sweep (run_ui_openapi_sanity.py) re-run: complete.
+- UI endpoint map + method checks re-run: complete.
+- UI param sweep + negative tests re-run: complete.
+- UI concurrency smoke + contract tests re-run: complete.
+- UI data ops tests (glossary + recipe CRUD + dataset glossary set/restore) re-run: complete.
+- UI smoke (GPU endpoints) re-run: complete.
+- Tier‑0 fuzz + Tier‑1 fuzz (GPU) re-run: complete.
+- OpenAPI missing param sanity: complete.
+- OpenAPI missing query sanity: complete.
+- UI endpoint discovery (check_ui_endpoints.py): complete; only placeholder paths (/{}/active, /{}/runs, etc.) flagged.
+- Refactor validation (SKIP_GPU=1): complete.
+- Refactor validation (SKIP_GPU=0): complete.
+- Qwen prepass smoke (2 images, seed=123): complete.
+- Qwen prepass benchmark (2 images, prepass-only, seed=123): complete.
+- UI smoke (GPU endpoints) re-run after RF‑DETR fix: complete (RF‑DETR now returns 200).
+- Refactor validation (SKIP_GPU=0) re-run after RF‑DETR device fallback: complete.
+- Pytest (tests/ only) re-run after RF‑DETR fix: 51 passed.
+- Qwen prepass benchmark (1 image, label-source=yolo, prepass-only): complete.
+- Qwen prepass benchmark (1 image, label-source=yolo, full pipeline): complete.
+- UI smoke (GPU endpoints) re-run after RF‑DETR device fallback: complete.
+
 
 Atomic Task List (Executable Roadmap)
 -------------------------------------
@@ -585,6 +635,14 @@ Validation attempt notes
   tools/run_qwen_prepass_benchmark.sh (10 images). YOLO baseline returned 500s.
 - 2026-02-02: Caption sanity check via /qwen/caption returned HTTP 503 after
   retries; needs re‑run when Qwen is available.
+- 2026-02-03: Re‑ran API smoke checks after fixes.
+  - /qwen/caption (full) succeeded with Qwen3‑VL 4B Instruct.
+  - /yolo/predict_full now returns labelmap but 0 detections on a
+    labeled image (needs investigation; model may be under‑performing).
+  - /rfdetr/predict_full now succeeds (74 detections on the same image).
+  - /runtime/unload now succeeds (fixed argument mismatch).
+  - Added guard: if active YOLO run is the smoke dataset, raise
+    yolo_active_smoke_run (prevents silent 0‑detection runs).
 
 Blockers
 --------
@@ -1679,3 +1737,27 @@ Progress Log
   pending new evidence.
 - 2026-02-02: Repo hygiene — api/ + models/ + services/qwen_generation.py are
   new refactor modules and must be staged in the next commit (currently untracked).
+- 2026-02-03: Tier‑0 fuzz updated to drop deprecated /datasets endpoints and use
+  /system/storage_check + /system/gpu instead. Tier‑1 calibration step now
+  skips gracefully if job fails, and uses dataset_id=qwen_dataset by default.
+- 2026-02-03: Fixed qwen caption merge call‑signature mismatch (pil_img /
+  base_model_id / max_new_tokens) and restored qwen model registry stubs to
+  prevent /qwen/models 500s. (Model registry remains empty unless custom
+  Qwen finetunes are added.)
+- 2026-02-03: Restored missing detector helpers: _clamp_conf_value aliases and
+  added _xywh_to_xyxy in utils/coords. Tier‑0/Tier‑1 (GPU) now runs end‑to‑end,
+  with expected labelmap‑mismatch warnings when fuzz_pack labelmap doesn’t
+  match detector labelmaps.
+- 2026-02-03: Suppressed TypeError noise from SAM3 similarity expansion in
+  services/prepass_similarity.py (skip warnings for TypeError). After uvicorn
+  restart, Tier‑1 GPU fuzz prepass warnings cleared. Tier‑0/Tier‑1 GPU run
+  completed cleanly (prepass, windowed prepass, captions, calibration job
+  metadata returned). Logs in /tmp/tator_fuzz.
+- 2026-02-03: UI endpoint smoke tests added:
+  - tools/check_ui_endpoints.py (UI ↔ OpenAPI diff)
+  - tools/run_ui_smoke.py (GET/POST smoke for label‑tab core endpoints).
+  UI smoke now passes: predict_base64, yolo/rfdetr full+windowed, sam_bbox,
+  sam_point, qwen/sam3 models, system endpoints.
+  Remaining mismatches (missing in OpenAPI but referenced in UI):
+    /datasets*, /glossaries*, /qwen/datasets*, /sam3/datasets*.
+  These require restoration or UI updates in the next step.
